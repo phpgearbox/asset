@@ -1,0 +1,26 @@
+{
+	"name": "gears/asset",
+	"description": "An Asset Minfication Pipeline.",
+	"homepage": "https://github.com/phpgearbox/asset",
+	"keywords": ["minification", "javascript", "stylesheets", "css"],
+	"license": "MIT",
+	"autoload":
+	{
+		"psr-4": { "Gears\\Asset\\": "src" }
+	},
+	"require":
+	{
+		"codegyre/robo": "*",
+		"fxp/composer-asset-plugin": "v1.0.0-beta4",
+		"tedivm/jshrink": "*",
+		"natxet/CssMin": "*",
+		"oyejorge/less.php": "*",
+		"leafo/scssphp": "*",
+		"symfony/finder": "*"
+	},
+	"require-dev":
+	{
+		"phpunit/phpunit": "4.*",
+		"mockery/mockery": "*"
+	}
+}
