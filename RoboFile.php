@@ -19,16 +19,7 @@ require_once(__DIR__.'/vendor/autoload.php');
 
 class RoboFile extends Robo\Tasks
 {
-	use Gears\Asset\Tasks\BuildAsset;
-
-	public function example()
-	{
-		$this->taskBuildAsset('./script.js')
-			->source(['jquery.bower', '/var/www/vhosts/bakers-nz/wp-content/themes/bakers/assets/js'])
-			->debug(true)
-			->template('./test.html')
-		->run();
-	}
+	use Gears\Asset\Builder;
 
 	/**
 	 * Method: test
@@ -50,8 +41,69 @@ class RoboFile extends Robo\Tasks
 	 */
 	public function test()
 	{
-		$this->taskPHPUnit()
-			->arg('./tests')
+		$this->taskCleanDir('./tests/output')->run();
+
+		$this->taskPHPUnit()->arg('./tests')->run();
+	}
+
+	public function testSingleJsAsset()
+	{
+		$this->taskBuildAsset('./tests/output/jquery.js')
+			->source('./tests/source/jquery.js')
+		->run();
+	}
+
+	public function testFolderJsAsset()
+	{
+		$this->taskBuildAsset('./tests/output/folder.js')
+			->source('./tests/source/folder')
+		->run();
+	}
+
+	public function testSingleCssAsset()
+	{
+		$this->taskBuildAsset('./tests/output/bootstrap.css')
+			->source('./tests/source/bootstrap.css')
+		->run();
+	}
+
+	public function testFolderCssAsset()
+	{
+		$this->taskBuildAsset('./tests/output/folder.css')
+			->source('./tests/source/folder')
+		->run();
+	}
+
+	public function testLessAsset()
+	{
+		$this->taskBuildAsset('./tests/output/less.css')
+			->source('./tests/source/less/bootstrap.less')
+		->run();
+	}
+
+	public function testScssAsset()
+	{
+		$this->taskBuildAsset('./tests/output/scss.css')
+			->source('./tests/source/scss/_bootstrap.scss')
+		->run();
+	}
+
+	public function testBowerAsset()
+	{
+		$this->taskBuildAsset('./tests/output/bower.js')
+			->source('jquery.bower')
+		->run();
+	}
+
+	public function testManyAssets()
+	{
+		$this->taskBuildAsset('./tests/output/many.css')
+			->source
+			([
+				'./tests/source/folder',
+				'./tests/source/less/bootstrap.less',
+				'./tests/source/scss/_bootstrap.scss'
+			])
 		->run();
 	}
 }

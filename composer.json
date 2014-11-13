@@ -1,8 +1,8 @@
 {
 	"name": "gears/asset",
-	"description": "An Asset Minfication Pipeline.",
+	"description": "An Asset Minfication Pipeline for the Robo Task Runner.",
 	"homepage": "https://github.com/phpgearbox/asset",
-	"keywords": ["minification", "javascript", "stylesheets", "css"],
+	"keywords": ["minification", "javascript", "stylesheets", "css", "robo"],
 	"license": "MIT",
 	"autoload":
 	{
@@ -16,7 +16,8 @@
 		"natxet/CssMin": "*",
 		"oyejorge/less.php": "*",
 		"leafo/scssphp": "*",
-		"symfony/finder": "*"
+		"symfony/finder": "*",
+		"gears/string": "*"
 	},
 	"require-dev":
 	{

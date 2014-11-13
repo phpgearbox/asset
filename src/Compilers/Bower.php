@@ -11,9 +11,17 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-class Bower
+use Gears\Asset\Contracts\Compiler;
+use Symfony\Component\Finder\Finder;
+
+class Bower implements Compiler
 {
-	public static function input($package)
+	public function __construct($folder, $asset_type, $debug)
+	{
+
+	}
+
+	public function compile()
 	{
 		
 	}

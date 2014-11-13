@@ -1,0 +1,2 @@
+This folder is where our unit tests will dump generated assets.
+Each time the unit tests are run the folder is cleared out at the start.
