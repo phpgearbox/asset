@@ -16,9 +16,9 @@ use Symfony\Component\Finder\Finder;
 
 class Bower implements Compiler
 {
-	public function __construct($folder, $asset_type, $debug)
+	public function __construct($file, $asset_type, $debug)
 	{
-
+		
 	}
 
 	public function compile()
