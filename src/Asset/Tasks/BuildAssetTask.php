@@ -1,4 +1,4 @@
-<?php namespace Gears\Asset;
+<?php namespace Gears\Asset\Tasks;
 ////////////////////////////////////////////////////////////////////////////////
 // __________ __             ________                   __________              
 // \______   \  |__ ______  /  _____/  ____ _____ ______\______   \ _______  ___
@@ -18,14 +18,6 @@ use Robo\Task\FileSystem;
 use Robo\Task\Shared\DynamicConfig;
 use Robo\Task\Shared\TaskInterface;
 use Symfony\Component\Finder\Finder;
-
-trait Builder
-{
-	protected function taskBuildAsset($destination)
-	{
-		return new BuildAssetTask($destination);
-	}
-}
 
 class BuildAssetTask implements TaskInterface
 {

@@ -11,57 +11,32 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-use RuntimeException;
 use Gears\String as Str;
-use Gears\Asset\Contracts\Compiler;
+use Gears\Asset\Compilers\Base;
 use Symfony\Component\Finder\Finder;
 
-class Folder implements Compiler
+class Folder extends Base
 {
-	private $files;
-
-	private $minifier = false;
-
-	public function __construct($folder, $asset_type, $debug)
-	{
-		$this->files = new Finder();
-		$this->files->files();
-		$this->files->name('*.'.$asset_type);
-		$this->files->in($folder);
-		$this->files->sortByName();
-
-		if (!$debug)
-		{
-			$this->minifier = '\Gears\Asset\Minifiers\\'.ucfirst($asset_type);
-
-			if (!class_exists($this->minifier))
-			{
-				throw new RuntimeException
-				(
-					'Minification is not supported for type: '.$asset_type
-				);
-			}
-		}
-	}
-
 	public function compile()
 	{
-		$compiled = '';
+		$files = new Finder();
+		$files->files();
+		$files->name('*.'.$this->assetType);
+		$files->in($this->file->getPathname());
+		$files->sortByName();
 
-		foreach ($this->files as $file)
+		foreach ($files as $file)
 		{
-			if ($this->minifier !== false && !Str::contains($file->getFilename(), '.min.'))
+			if ($this->doWeNeedToMinify($file))
 			{
-				$minifier = $this->minifier;
-				$minifier = new $minifier($file->getContents());
-				$compiled .= $minifier->minify();
+				$this->source .= $this->getMinifier($file->getContents())->minify();
 			}
 			else
 			{
-				$compiled .= $file->getContents()."\n\n";
+				$this->source .= $file->getContents()."\n\n";
 			}
 		}
-
-		return $compiled;
+		
+		return $this->source;
 	}
 }

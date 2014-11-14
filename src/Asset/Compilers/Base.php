@@ -11,49 +11,66 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
+use SplFileInfo;
 use RuntimeException;
 use Gears\String as Str;
 use Gears\Asset\Contracts\Compiler;
 
 class Base implements Compiler
 {
-	protected $filePath;
+	protected $file;
 
-	protected $fileContents;
+	protected $source = '';
 
-	protected $minifier = false;
+	protected $assetType;
+
+	protected $debug;
 
 	public function __construct($file, $asset_type, $debug)
 	{
-		$this->filePath = $file;
+		$this->file = new SplFileInfo($file);
 
-		$this->fileContents = file_get_contents($this->filePath);
-
-		if (!$debug && !Str::contains($this->filePath, '.min.'))
+		if (!$this->file->isDir())
 		{
-			$this->minifier = '\Gears\Asset\Minifiers\\'.ucfirst($asset_type);
-
-			if (!class_exists($this->minifier))
-			{
-				throw new RuntimeException
-				(
-					'Minification is not supported for type: '.$asset_type
-				);
-			}
+			$this->source = file_get_contents($this->file->getPathname());
 		}
+
+		$this->assetType = $asset_type;
+
+		$this->debug = $debug;
 	}
 
 	public function compile()
 	{
-		if ($this->minifier !== false)
+		if ($this->doWeNeedToMinify($this->file))
 		{
-			$minifier = $this->minifier;
-			$minifier = new $minifier($this->fileContents);
-			return $minifier->minify();
+			return $this->getMinifier($this->source)->minify();
 		}
-		else
+
+		return $this->source."\n\n";
+	}
+
+	protected function getMinifier($source)
+	{
+		$minifier = '\Gears\Asset\Minifiers\\'.ucfirst($this->assetType);
+
+		if (!class_exists($minifier))
 		{
-			return $this->fileContents."\n\n";
+			throw new RuntimeException
+			(
+				'Minification is not supported for type: '.$this->assetType
+			);
 		}
+
+		return new $minifier($source);
+	}
+
+	protected function doWeNeedToMinify($file)
+	{
+		return
+		(
+			!$this->debug &&
+			!Str::contains($file->getFilename(), '.min.')
+		);
 	}
 }

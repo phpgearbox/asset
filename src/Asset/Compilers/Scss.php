@@ -19,8 +19,8 @@ class Scss extends Base
 	public function compile()
 	{
 		$parser = new Scss_Parser();
-		$parser->setImportPaths(pathinfo($this->filePath, PATHINFO_DIRNAME));
-		$this->fileContents = $parser->compile($this->fileContents);
+		$parser->setImportPaths($this->file->getPath());
+		$this->source = $parser->compile($this->source);
 		return parent::compile();
 	}
 }

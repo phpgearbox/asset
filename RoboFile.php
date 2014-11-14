@@ -19,7 +19,7 @@ require_once(__DIR__.'/vendor/autoload.php');
 
 class RoboFile extends Robo\Tasks
 {
-	use Gears\Asset\Builder;
+	use Gears\Asset;
 
 	/**
 	 * Method: test

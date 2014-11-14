@@ -19,10 +19,9 @@ class Less extends Base
 	public function compile()
 	{
 		$parser = new Less_Parser();
-		$base_dir = pathinfo($this->filePath, PATHINFO_DIRNAME);
-		$parser->SetImportDirs([$base_dir => '']);
-		$parser->parse($this->fileContents);
-		$this->fileContents = $parser->getCss();
+		$parser->SetImportDirs([$this->file->getPath() => '']);
+		$parser->parse($this->source);
+		$this->source = $parser->getCss();
 		return parent::compile();
 	}
 }

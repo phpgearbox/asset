@@ -1,4 +1,4 @@
-<?php namespace Gears\Asset\Compilers;
+<?php namespace Gears;
 ////////////////////////////////////////////////////////////////////////////////
 // __________ __             ________                   __________              
 // \______   \  |__ ______  /  _____/  ____ _____ ______\______   \ _______  ___
@@ -11,27 +11,10 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-use Gears\Asset\Contracts\Compiler;
-use Symfony\Component\Finder\Finder;
-
-class Bower implements Compiler
+trait Asset
 {
-	public function __construct($file, $asset_type, $debug)
+	protected function taskBuildAsset($destination)
 	{
-		
-	}
-
-	public function compile()
-	{
-		
+		return new \Gears\Asset\Tasks\BuildAssetTask($destination);
 	}
 }
-
-/*
- * if the asset is js then only select the js files from bower.json main array
- * if the asset is css then only select the css files from bower.json main array
- * we would need to assume the order of the array is the correct order.
- * the issue is that not all packages have a "main" section in their bower.json file
- * some packages I have seen listing vendor libs in their main arrays, this would potentially cause all sorts of conflicts
- * plus there are other issues to worry about such as fonts, images, etc
- */
