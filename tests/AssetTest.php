@@ -88,21 +88,6 @@ class AssetTest extends PHPUnit_Framework_TestCase
 		);
 	}
 
-	public function testBowerAsset()
-	{
-		$results = $this->callRoboTask('test:bower-asset');
-
-		$this->assertEmpty($results['stderr']);
-
-		$this->assertFileExists('./tests/output/bower.js');
-
-		$this->assertFileEquals
-		(
-			'./tests/expected/bower.js',
-			'./tests/output/bower.js'
-		);
-	}
-
 	public function testManyAssets()
 	{
 		$results = $this->callRoboTask('test:many-assets');

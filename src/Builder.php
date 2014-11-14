@@ -138,6 +138,30 @@ class BuildAssetTask implements TaskInterface
 	public function __construct($destination)
 	{
 		$this->destination = $destination;
+
+		// We use this in a few diffrent places, so will set it now.
+		$this->asset_type = pathinfo($this->destination, PATHINFO_EXTENSION);
+	}
+
+	/**
+	 * Method: source
+	 * =========================================================================
+	 * This ensures the source value will always be an array,
+	 * even if someone is lazy and only enters a single string.
+	 * 
+	 * Parameters:
+	 * -------------------------------------------------------------------------
+	 *  - $value: A string or array.
+	 * 
+	 * Returns:
+	 * -------------------------------------------------------------------------
+	 * self
+	 */
+	public function source($value)
+	{
+		if (!is_array($value)) $value = [$value];
+		$this->source = $value;
+		return $this;
 	}
 
 	/**
@@ -169,99 +193,191 @@ class BuildAssetTask implements TaskInterface
 	 */
 	public function run()
 	{
-		// Initialise  the asset
+		// Initialise  the asset, this is what we will eventually
+		// write to the file-system at the end of this method.
 		$asset_contents = '';
-
-		// What sort of asset are we building
-		$asset_type = pathinfo($this->destination, PATHINFO_EXTENSION);
-
-		// Make sure source is an array
-		if (!is_array($this->source)) $this->source = [$this->source];
 
 		// Loop through the source files
 		foreach ($this->source as $file)
 		{
-			// Not all source files are the same, some need special treatment.
-			$source_type = pathinfo($file, PATHINFO_EXTENSION);
-
-			// If the ext is empty it should be a folder
-			if (empty($source_type))
-			{
-				if (is_dir($file))
-				{
-					$source_type = 'folder';
-				}
-				else
-				{
-					throw new RuntimeException
-					(
-						'The source file type has not been detected! - '.
-						'('.$file.')'
-					);
-				}
-			}
-
-			// Which compiler will we use?
-			$compiler_type = '\Gears\Asset\Compilers\\'.ucfirst($source_type);
-
-			// Does the compiler exist
-			if (!class_exists($compiler_type))
-			{
-				throw new RuntimeException
-				(
-					'The source file type is not supported! - ('.$file.')'
-				);
-			}
-
 			// Run the compiler
-			$compiler = new $compiler_type($file, $asset_type, $this->debug);
-			$asset_contents .= $compiler->compile();
+			$asset_contents .= $this->getCompiler($file)->compile();
 		}
 
 		// If a template file has been set lets update it
 		if ($this->template !== false && file_exists($this->template))
 		{
-			// Grab the asset name
-			$asset_name = pathinfo($this->destination, PATHINFO_FILENAME);
-			$asset_name_quoted = preg_quote($asset_name, '/');
-
-			// Create our regular expression
-			$search_for =
-			'/'.
-				$asset_name_quoted.'\..*?\.'.$asset_type.'|'.
-				$asset_name_quoted.'\..*?\.min\.'.$asset_type.'|'.
-				$asset_name_quoted.'\.min\.'.$asset_type.'|'.
-				$asset_name_quoted.'\.'.$asset_type.
-			'/';
-
-			// This is the new asset name
-			$replace_with = $asset_name.'.'.time().'.'.$asset_type;
-
-			// Run the search and replace
-			$this->taskReplaceInFile($this->template)
-				->regex($search_for)
-				->to($replace_with)
-			->run();
-
-			// Grab the asset base dir
-			$asset_base_dir = pathinfo($this->destination, PATHINFO_DIRNAME);
-
-			// Update the final asset filename to match
-			$this->destination = $asset_base_dir.'/'.$replace_with;
-
-			// Delete any old assets
-			$files_to_delete = new Finder();
-			$files_to_delete->files();
-			$files_to_delete->name($asset_name.'.*.'.$asset_type);
-			$files_to_delete->name($asset_name.'.*.'.$asset_type.'.gz');
-			$files_to_delete->in($asset_base_dir);
-			foreach ($files_to_delete as $file_to_delete)
-			{
-				unlink($file_to_delete->getPathname());
-			}
+			$this->updateTemplateFile();
 		}
 
 		// Now write the asset
+		$this->writeAsset($asset_contents);
+
+		// If we get to here assume everything worked
+		return Result::success($this);
+	}
+
+	/**
+	 * Method: getCompiler
+	 * =========================================================================
+	 * This will return a compiler object, based on the input source file.
+	 * 
+	 * Parameters:
+	 * -------------------------------------------------------------------------
+	 *  - $file: The file/folder path of the source.
+	 * 
+	 * Throws:
+	 * -------------------------------------------------------------------------
+	 *  - RuntimeException: In the event the compiler type doesn't exist.
+	 * 
+	 * Returns:
+	 * -------------------------------------------------------------------------
+	 * One of the ```Gears\Asset\Compilers```, setup and ready to compile.
+	 */
+	private function getCompiler($file)
+	{
+		// Grab the source type
+		$source_type = $this->getSourceType($file);
+
+		// Which compiler will we use?
+		$compiler_type = '\Gears\Asset\Compilers\\';
+		$compiler_type .= ucfirst($source_type);
+
+		// Does the compiler exist
+		if (!class_exists($compiler_type))
+		{
+			throw new RuntimeException
+			(
+				'The source file type is not supported! - ('.$file.')'
+			);
+		}
+
+		// Return the compiler
+		return new $compiler_type($file, $this->asset_type, $this->debug);
+	}
+
+	/**
+	 * Method: getSourceType
+	 * =========================================================================
+	 * As a folder does not have a file extension we need to mimic it.
+	 * 
+	 * Parameters:
+	 * -------------------------------------------------------------------------
+	 *  - $file: The file/folder path of the source.
+	 * 
+	 * Throws:
+	 * -------------------------------------------------------------------------
+	 *  - RuntimeException: In the event the extension is empty
+	 *    and the path does not appear to be a folder.
+	 * 
+	 * Returns:
+	 * -------------------------------------------------------------------------
+	 *  - string: The file extension or folder if its a folder.
+	 */
+	private function getSourceType($file)
+	{
+		// Grab the file extension
+		$ext = pathinfo($file, PATHINFO_EXTENSION);
+
+		// If the ext is empty it should be a folder
+		if (empty($ext))
+		{
+			if (!is_dir($file))
+			{
+				throw new RuntimeException
+				(
+					'The source file type has not been detected! - '.
+					'('.$file.')'
+				);
+			}
+
+			$ext = 'folder';
+		}
+
+		// Return the type of the source file
+		return $ext;
+	}
+
+	/**
+	 * Method: updateTemplateFile
+	 * =========================================================================
+	 * So that we can bust the client cache in browser, we will rename the
+	 * asset filename, using a timestamp. But we also need to update the
+	 * HTML that includes the asset into the web page.
+	 * This method does all that for us.
+	 * 
+	 * Parameters:
+	 * -------------------------------------------------------------------------
+	 * n/a
+	 * 
+	 * Returns:
+	 * -------------------------------------------------------------------------
+	 * void
+	 */
+	private function updateTemplateFile()
+	{
+		// Grab the asset name
+		$asset_name = pathinfo($this->destination, PATHINFO_FILENAME);
+		$asset_name_quoted = preg_quote($asset_name, '/');
+
+		// Create our regular expression
+		$search_for =
+		'/'.
+			$asset_name_quoted.'\..*?\.'.$this->asset_type.'|'.
+			$asset_name_quoted.'\..*?\.min\.'.$this->asset_type.'|'.
+			$asset_name_quoted.'\.min\.'.$this->asset_type.'|'.
+			$asset_name_quoted.'\.'.$this->asset_type.
+		'/';
+
+		// This is the new asset name
+		$replace_with = $asset_name.'.'.time().'.'.$this->asset_type;
+
+		// Run the search and replace
+		$this->taskReplaceInFile($this->template)
+			->regex($search_for)
+			->to($replace_with)
+		->run();
+
+		// Grab the asset base dir
+		$asset_base_dir = pathinfo($this->destination, PATHINFO_DIRNAME);
+
+		// Update the final asset filename to match
+		$this->destination = $asset_base_dir.'/'.$replace_with;
+
+		// Delete any old assets
+		$files_to_delete = new Finder();
+		$files_to_delete->files();
+		$files_to_delete->name($asset_name.'.*.'.$this->asset_type);
+		$files_to_delete->name($asset_name.'.*.'.$this->asset_type.'.gz');
+		$files_to_delete->in($asset_base_dir);
+		foreach ($files_to_delete as $file_to_delete)
+		{
+			unlink($file_to_delete->getPathname());
+		}
+	}
+
+	/**
+	 * Method: writeAsset
+	 * =========================================================================
+	 * The business end, finally lets actually save the
+	 * compiled / minified asset.
+	 * 
+	 * Parameters:
+	 * -------------------------------------------------------------------------
+	 *  - $asset_contents: The contents of the asset.
+	 * 
+	 * Throws:
+	 * -------------------------------------------------------------------------
+	 *  - RuntimeException: If we failed to write either the standard
+	 *    or gzipped asset.
+	 * 
+	 * Returns:
+	 * -------------------------------------------------------------------------
+	 * void
+	 */
+	private function writeAsset($asset_contents)
+	{
+		// Write the normal asset
 		if (file_put_contents($this->destination, $asset_contents) === false)
 		{
 			throw new RuntimeException
@@ -286,8 +402,5 @@ class BuildAssetTask implements TaskInterface
 				);
 			}
 		}
-
-		// If we get to here assume everything worked
-		return Result::success($this);
 	}
 }

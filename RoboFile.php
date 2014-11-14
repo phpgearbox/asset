@@ -88,13 +88,6 @@ class RoboFile extends Robo\Tasks
 		->run();
 	}
 
-	public function testBowerAsset()
-	{
-		$this->taskBuildAsset('./tests/output/bower.js')
-			->source('jquery.bower')
-		->run();
-	}
-
 	public function testManyAssets()
 	{
 		$this->taskBuildAsset('./tests/output/many.css')
