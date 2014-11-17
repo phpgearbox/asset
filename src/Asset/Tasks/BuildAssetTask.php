@@ -11,6 +11,7 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
+use SplFileInfo;
 use RuntimeException;
 use Robo\Result;
 use Robo\Output;
@@ -129,10 +130,26 @@ class BuildAssetTask implements TaskInterface
 	 */
 	public function __construct($destination)
 	{
-		$this->destination = $destination;
+		$this->destination = new SplFileInfo($destination);
 
-		// We use this in a few diffrent places, so will set it now.
-		$this->asset_type = pathinfo($this->destination, PATHINFO_EXTENSION);
+		// Touch the destination so that "realpath" works.
+		$result = $this->taskFileSystemStack()
+			->mkdir($this->destination->getPath())
+			->touch($this->destination->getPathname())
+		->run()->wasSuccessful();
+
+		// Plus this should error out early if we can't write to the file
+		if (!$result)
+		{
+			throw new RuntimeException
+			(
+				'We can not write to the destination file: '.
+				$this->destination->getPathname()
+			);
+		}
+
+		// We use this in a few different places, so will set it now.
+		$this->asset_type = $this->destination->getExtension();
 	}
 
 	/**
@@ -245,7 +262,7 @@ class BuildAssetTask implements TaskInterface
 		}
 
 		// Return the compiler
-		return new $compiler_type($file, $this->asset_type, $this->debug);
+		return new $compiler_type($file, $this->asset_type, $this->debug, $this->destination);
 	}
 
 	/**
@@ -309,7 +326,7 @@ class BuildAssetTask implements TaskInterface
 	private function updateTemplateFile()
 	{
 		// Grab the asset name
-		$asset_name = pathinfo($this->destination, PATHINFO_FILENAME);
+		$asset_name = $this->destination->getFilename();
 		$asset_name_quoted = preg_quote($asset_name, '/');
 
 		// Create our regular expression
@@ -331,10 +348,10 @@ class BuildAssetTask implements TaskInterface
 		->run();
 
 		// Grab the asset base dir
-		$asset_base_dir = pathinfo($this->destination, PATHINFO_DIRNAME);
+		$asset_base_dir = $this->destination->getPath();
 
 		// Update the final asset filename to match
-		$this->destination = $asset_base_dir.'/'.$replace_with;
+		$this->destination = new SplFileInfo($asset_base_dir.'/'.$replace_with);
 
 		// Delete any old assets
 		$files_to_delete = new Finder();
@@ -370,18 +387,18 @@ class BuildAssetTask implements TaskInterface
 	private function writeAsset($asset_contents)
 	{
 		// Write the normal asset
-		if (file_put_contents($this->destination, $asset_contents) === false)
+		if (file_put_contents($this->destination->getPathname(), $asset_contents) === false)
 		{
 			throw new RuntimeException
 			(
-				'Failed to write asset: '.$this->destination
+				'Failed to write asset: '.$this->destination->getPathname()
 			);
 		}
 
 		// Create a gzipped version of the asset
 		if ($this->debug === false && $this->gz === true)
 		{
-			$gz_file_name = $this->destination.'.gz';
+			$gz_file_name = $this->destination->getPathname().'.gz';
 
 			$gz_contents = gzencode($asset_contents);
 

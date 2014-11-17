@@ -26,7 +26,9 @@ class Base implements Compiler
 
 	protected $debug;
 
-	public function __construct($file, $asset_type, $debug)
+	protected $destination;
+
+	public function __construct($file, $asset_type, $debug, $destination)
 	{
 		$this->file = new SplFileInfo($file);
 
@@ -38,6 +40,8 @@ class Base implements Compiler
 		$this->assetType = $asset_type;
 
 		$this->debug = $debug;
+
+		$this->destination = $destination;
 	}
 
 	public function compile()

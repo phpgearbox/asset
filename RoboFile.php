@@ -99,4 +99,12 @@ class RoboFile extends Robo\Tasks
 			])
 		->run();
 	}
+
+	public function testCssPaths()
+	{
+		$this->taskBuildAsset('./tests/output/bootstrap.css')
+			->source('./vendor/bower-asset/bootstrap/dist/css/bootstrap.css')
+			->debug(true)
+		->run();
+	}
 }

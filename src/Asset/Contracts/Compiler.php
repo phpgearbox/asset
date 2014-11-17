@@ -13,6 +13,6 @@
 
 interface Compiler
 {
-	public function __construct($file, $asset_type, $debug);
+	public function __construct($file, $asset_type, $debug, $destination);
 	public function compile();
 }

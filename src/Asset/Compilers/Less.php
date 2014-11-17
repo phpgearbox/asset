@@ -11,10 +11,10 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-use Gears\Asset\Compilers\Base;
+use Gears\Asset\Compilers\Css;
 use Less_Parser;
 
-class Less extends Base
+class Less extends Css
 {
 	public function compile()
 	{

@@ -11,10 +11,10 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-use Gears\Asset\Compilers\Base;
+use Gears\Asset\Compilers\Css;
 use Leafo\ScssPhp\Compiler as Scss_Parser;
 
-class Scss extends Base
+class Scss extends Css
 {
 	public function compile()
 	{
