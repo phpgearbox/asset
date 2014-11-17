@@ -1,4 +1,4 @@
-<?php namespace Gears\Asset\Contracts;
+<?php namespace Gears\Asset\Minifiers;
 ////////////////////////////////////////////////////////////////////////////////
 // __________ __             ________                   __________              
 // \______   \  |__ ______  /  _____/  ____ _____ ______\______   \ _______  ___
@@ -11,8 +11,21 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-interface Compiler
+use Gears\String as Str;
+
+trait Base
 {
-	public function __construct($file, $destination, $debug);
-	public function compile();
+	protected function lookForPreMinifiedAsset()
+	{
+		$min_path = Str::replace
+		(
+			$this->file->getRealPath(),
+			'.'.$this->file->getExtension(),
+			'.min.'.$this->file->getExtension()
+		);
+
+		if (!file_exists($min_path)) return false;
+
+		return file_get_contents($min_path);
+	}
 }

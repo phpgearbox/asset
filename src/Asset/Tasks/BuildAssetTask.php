@@ -147,9 +147,6 @@ class BuildAssetTask implements TaskInterface
 				$this->destination->getPathname()
 			);
 		}
-
-		// We use this in a few different places, so will set it now.
-		$this->asset_type = $this->destination->getExtension();
 	}
 
 	/**
@@ -209,7 +206,7 @@ class BuildAssetTask implements TaskInterface
 		// Loop through the source files
 		foreach ($this->source as $file)
 		{
-			// Run the compiler
+			// Run the compiler for each file
 			$asset_contents .= $this->getCompiler($file)->compile();
 		}
 
@@ -262,7 +259,7 @@ class BuildAssetTask implements TaskInterface
 		}
 
 		// Return the compiler
-		return new $compiler_type($file, $this->asset_type, $this->debug, $this->destination);
+		return new $compiler_type($file, $this->destination, $this->debug);
 	}
 
 	/**
@@ -325,21 +322,22 @@ class BuildAssetTask implements TaskInterface
 	 */
 	private function updateTemplateFile()
 	{
-		// Grab the asset name
+		// Get some details about the asset
 		$asset_name = $this->destination->getFilename();
 		$asset_name_quoted = preg_quote($asset_name, '/');
+		$asset_ext = $this->destination->getExtension();
 
 		// Create our regular expression
 		$search_for =
 		'/'.
-			$asset_name_quoted.'\..*?\.'.$this->asset_type.'|'.
-			$asset_name_quoted.'\..*?\.min\.'.$this->asset_type.'|'.
-			$asset_name_quoted.'\.min\.'.$this->asset_type.'|'.
-			$asset_name_quoted.'\.'.$this->asset_type.
+			$asset_name_quoted.'\..*?\.'.$asset_ext.'|'.
+			$asset_name_quoted.'\..*?\.min\.'.$asset_ext.'|'.
+			$asset_name_quoted.'\.min\.'.$asset_ext.'|'.
+			$asset_name_quoted.'\.'.$asset_ext.
 		'/';
 
 		// This is the new asset name
-		$replace_with = $asset_name.'.'.time().'.'.$this->asset_type;
+		$replace_with = $asset_name.'.'.time().'.'.$asset_ext;
 
 		// Run the search and replace
 		$this->taskReplaceInFile($this->template)
@@ -356,8 +354,8 @@ class BuildAssetTask implements TaskInterface
 		// Delete any old assets
 		$files_to_delete = new Finder();
 		$files_to_delete->files();
-		$files_to_delete->name($asset_name.'.*.'.$this->asset_type);
-		$files_to_delete->name($asset_name.'.*.'.$this->asset_type.'.gz');
+		$files_to_delete->name($asset_name.'.*.'.$asset_ext);
+		$files_to_delete->name($asset_name.'.*.'.$asset_ext.'.gz');
 		$files_to_delete->in($asset_base_dir);
 		foreach ($files_to_delete as $file_to_delete)
 		{

@@ -18,17 +18,53 @@ use Gears\Asset\Contracts\Compiler;
 
 class Base implements Compiler
 {
+	/**
+	 * Property: $file
+	 * =========================================================================
+	 * This will contain an instance of ```SplFileInfo```.
+	 * We represent the source file that needs to be compiled.
+	 */
 	protected $file;
 
-	protected $source = '';
-
-	protected $assetType;
-
-	protected $debug;
-
+	/**
+	 * Property: $destination
+	 * =========================================================================
+	 * This will contain an instance of ```SplFileInfo```.
+	 * We represent the final destination asset file that will be created.
+	 */
 	protected $destination;
 
-	public function __construct($file, $asset_type, $debug, $destination)
+	/**
+	 * Property: $source
+	 * =========================================================================
+	 * If the [Property: $file](#) is indeed a file we will read it's contents
+	 * into this property. Remember it's possible that we are given a folder...
+	 */
+	protected $source = '';
+
+	/**
+	 * Property: $debug
+	 * =========================================================================
+	 * This basically tells us if we are allowed to minify the compiled source.
+	 */
+	protected $debug;
+
+	/**
+	 * Method: __construct
+	 * =========================================================================
+	 * We inject some intial data and thats about it.
+	 *
+	 * Paramters:
+	 * -------------------------------------------------------------------------
+	 *  - $file: The path to the source file we need to compile.
+	 *  - $destination: The final destination ```SplFileInfo``` object.
+	 *  - $debug: A simple true or false
+	 *
+	 * Returns:
+	 * -------------------------------------------------------------------------
+	 * void
+	 */
+	public function __construct($file, $destination, $debug)
 	{
 		$this->file = new SplFileInfo($file);
 
@@ -37,13 +73,29 @@ class Base implements Compiler
 			$this->source = file_get_contents($this->file->getPathname());
 		}
 
-		$this->assetType = $asset_type;
+		$this->destination = $destination;
 
 		$this->debug = $debug;
-
-		$this->destination = $destination;
 	}
 
+	/**
+	 * Method: compile
+	 * =========================================================================
+	 * This implementation caters for both standard native Css and Js files
+	 * that don't need any compiling as such. The less and sass compilers
+	 * extend the css compiler.
+	 * 
+	 * > NOTE: Down the track coffee script / dart / other such
+	 * > languages could be added for javascript in a similar manner.
+	 *
+	 * Paramters:
+	 * -------------------------------------------------------------------------
+	 * n/a
+	 *
+	 * Returns:
+	 * -------------------------------------------------------------------------
+	 * string
+	 */
 	public function compile()
 	{
 		if ($this->doWeNeedToMinify($this->file))
@@ -54,21 +106,50 @@ class Base implements Compiler
 		return $this->source."\n\n";
 	}
 
+	/**
+	 * Method: getMinifier
+	 * =========================================================================
+	 * Creates the minfier object.
+	 *
+	 * Paramters:
+	 * -------------------------------------------------------------------------
+	 *  - $source: The source code to minify.
+	 *
+	 * Returns:
+	 * -------------------------------------------------------------------------
+	 * An instance of a ```Gears\Asset\Minifiers```
+	 */
 	protected function getMinifier($source)
 	{
-		$minifier = '\Gears\Asset\Minifiers\\'.ucfirst($this->assetType);
+		$minifier = '\Gears\Asset\Minifiers\\';
+		$minifier .= ucfirst($this->destination->getExtension());
 
 		if (!class_exists($minifier))
 		{
 			throw new RuntimeException
 			(
-				'Minification is not supported for type: '.$this->assetType
+				'Minification is not supported for type: '.
+				$this->destination->getExtension()
 			);
 		}
 
-		return new $minifier($source);
+		return new $minifier($this->file, $source);
 	}
 
+	/**
+	 * Method: doWeNeedToMinify
+	 * =========================================================================
+	 * Based on if we are in debug mode and if the file is already minfied or
+	 * not, this tells us if we actually need to perform any minification.
+	 *
+	 * Paramters:
+	 * -------------------------------------------------------------------------
+	 *  - $file: A ```SplFileInfo``` object.
+	 *
+	 * Returns:
+	 * -------------------------------------------------------------------------
+	 * boolean
+	 */
 	protected function doWeNeedToMinify($file)
 	{
 		return

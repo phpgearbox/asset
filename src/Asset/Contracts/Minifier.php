@@ -13,6 +13,6 @@
 
 interface Minifier
 {
-	public function __construct($source);
+	public function __construct($file, $source);
 	public function minify();
 }

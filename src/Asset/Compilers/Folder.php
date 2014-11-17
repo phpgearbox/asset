@@ -21,7 +21,7 @@ class Folder extends Base
 	{
 		$files = new Finder();
 		$files->files();
-		$files->name('*.'.$this->assetType);
+		$files->name('*.'.$this->destination->getExtension());
 		$files->in($this->file->getPathname());
 		$files->sortByName();
 
