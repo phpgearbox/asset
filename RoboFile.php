@@ -41,8 +41,6 @@ class RoboFile extends Robo\Tasks
 	 */
 	public function test()
 	{
-		$this->taskBowerInstall()->run();
-
 		$this->taskCleanDir('./tests/output')->run();
 
 		$this->taskPHPUnit()->arg('./tests')->run();

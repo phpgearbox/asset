@@ -5,7 +5,9 @@ php:
   - "5.4"
 
 before_script:
+  - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   - npm install -g bower
+  - bower install -f
 
 install: "composer install"
 
