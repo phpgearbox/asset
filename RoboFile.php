@@ -46,45 +46,51 @@ class RoboFile extends Robo\Tasks
 		$this->taskPHPUnit()->arg('./tests')->run();
 	}
 
+	/*
+	 * The following tests are about testing the functionality of Gears\Asset.
+	 * Some of the compiled assets that these create will not actually work
+	 * inside a browser.
+	 */
+
 	public function testSingleJsAsset()
 	{
-		$this->taskBuildAsset('./tests/output/jquery.js')
-			->source('./tests/source/jquery.js')
+		$this->taskBuildAsset('./tests/output/single.js')
+			->source('./vendor/bower-asset/jquery/dist/jquery.js')
 		->run();
 	}
 
 	public function testFolderJsAsset()
 	{
 		$this->taskBuildAsset('./tests/output/folder.js')
-			->source('./tests/source/folder')
+			->source('./vendor/bower-asset/jquery/src')
 		->run();
 	}
 
 	public function testSingleCssAsset()
 	{
-		$this->taskBuildAsset('./tests/output/bootstrap.css')
-			->source('./tests/source/bootstrap.css')
+		$this->taskBuildAsset('./tests/output/single.css')
+			->source('./vendor/bower-asset/bootstrap/dist/css/bootstrap.css')
 		->run();
 	}
 
 	public function testFolderCssAsset()
 	{
 		$this->taskBuildAsset('./tests/output/folder.css')
-			->source('./tests/source/folder')
+			->source('./vendor/bower-asset/pure')
 		->run();
 	}
 
 	public function testLessAsset()
 	{
 		$this->taskBuildAsset('./tests/output/less.css')
-			->source('./tests/source/less/bootstrap.less')
+			->source('./vendor/bower-asset/bootstrap/less/bootstrap.less')
 		->run();
 	}
 
 	public function testScssAsset()
 	{
 		$this->taskBuildAsset('./tests/output/scss.css')
-			->source('./tests/source/scss/_bootstrap.scss')
+			->source('./vendor/bower-asset/bootstrap-sass/lib/bootstrap.scss')
 		->run();
 	}
 
@@ -93,17 +99,37 @@ class RoboFile extends Robo\Tasks
 		$this->taskBuildAsset('./tests/output/many.css')
 			->source
 			([
-				'./tests/source/folder',
-				'./tests/source/less/bootstrap.less',
-				'./tests/source/scss/_bootstrap.scss'
+				'./vendor/bower-asset/pure',
+				'./vendor/bower-asset/bootstrap/less/bootstrap.less',
+				'./vendor/bower-asset/bootstrap-sass/lib/bootstrap.scss'
 			])
 		->run();
 	}
 
-	public function testCssPaths()
+	public function testTemplate()
 	{
-		$this->taskBuildAsset('./tests/output/bootstrap.css')
-			->source('./vendor/bower-asset/bootstrap/dist/css/bootstrap.css')
+		$this->taskWriteToFile('./tests/output/template.html')
+			->line('<script src="./template.js"></script>')
+		->run();
+
+		$this->taskBuildAsset('./tests/output/template.js')
+			->source('./vendor/bower-asset/jquery/dist/jquery.js')
+			->template('./tests/output/template.html')
+		->run();
+	}
+
+	public function testGz()
+	{
+		$this->taskBuildAsset('./tests/output/gzipped.js')
+			->source('./vendor/bower-asset/jquery/dist/jquery.js')
+			->gz(true)
+		->run();
+	}
+
+	public function testDebug()
+	{
+		$this->taskBuildAsset('./tests/output/debug.js')
+			->source('./vendor/bower-asset/jquery/dist/jquery.js')
 			->debug(true)
 		->run();
 	}

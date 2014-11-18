@@ -11,6 +11,8 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
+use Gears\String as Str;
+
 class AssetTest extends PHPUnit_Framework_TestCase
 {
 	public function testSingleJsAsset()
@@ -19,12 +21,12 @@ class AssetTest extends PHPUnit_Framework_TestCase
 
 		$this->assertEmpty($results['stderr']);
 
-		$this->assertFileExists('./tests/output/jquery.js');
+		$this->assertFileExists('./tests/output/single.js');
 
 		$this->assertFileEquals
 		(
-			'./tests/expected/jquery.js',
-			'./tests/output/jquery.js'
+			'./tests/expected/single.js',
+			'./tests/output/single.js'
 		);
 	}
 
@@ -49,12 +51,12 @@ class AssetTest extends PHPUnit_Framework_TestCase
 
 		$this->assertEmpty($results['stderr']);
 
-		$this->assertFileExists('./tests/output/bootstrap.css');
+		$this->assertFileExists('./tests/output/single.css');
 
 		$this->assertFileEquals
 		(
-			'./tests/expected/bootstrap.css',
-			'./tests/output/bootstrap.css'
+			'./tests/expected/single.css',
+			'./tests/output/single.css'
 		);
 	}
 
@@ -88,6 +90,21 @@ class AssetTest extends PHPUnit_Framework_TestCase
 		);
 	}
 
+	public function testScssAsset()
+	{
+		$results = $this->callRoboTask('test:scss-asset');
+
+		$this->assertEmpty($results['stderr']);
+
+		$this->assertFileExists('./tests/output/scss.css');
+
+		$this->assertFileEquals
+		(
+			'./tests/expected/scss.css',
+			'./tests/output/scss.css'
+		);
+	}
+
 	public function testManyAssets()
 	{
 		$results = $this->callRoboTask('test:many-assets');
@@ -100,6 +117,52 @@ class AssetTest extends PHPUnit_Framework_TestCase
 		(
 			'./tests/expected/many.css',
 			'./tests/output/many.css'
+		);
+	}
+
+	public function testTemplate()
+	{
+		$results = $this->callRoboTask('test:template');
+
+		$this->assertEmpty($results['stderr']);
+
+		$this->assertFileExists('./tests/output/template.html');
+
+		$contents = file_get_contents('./tests/output/template.html');
+		$results = Str::wildCardMatch($contents, '<script src="./template.*.js"></script>');
+		$time = $results[1][0];
+
+		$this->assertFileExists('./tests/output/template.'.$time.'.js');
+	}
+
+	public function testGz()
+	{
+		$results = $this->callRoboTask('test:gz');
+
+		$this->assertEmpty($results['stderr']);
+
+		$this->assertFileExists('./tests/output/gzipped.js');
+		$this->assertFileExists('./tests/output/gzipped.js.gz');
+
+		$this->assertFileEquals
+		(
+			'./tests/expected/gzipped.js.gz',
+			'./tests/output/gzipped.js.gz'
+		);
+	}
+
+	public function testDebug()
+	{
+		$results = $this->callRoboTask('test:debug');
+
+		$this->assertEmpty($results['stderr']);
+
+		$this->assertFileExists('./tests/output/debug.js');
+
+		$this->assertFileEquals
+		(
+			'./tests/expected/debug.js',
+			'./tests/output/debug.js'
 		);
 	}
 

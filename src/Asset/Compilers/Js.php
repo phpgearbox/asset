@@ -13,6 +13,16 @@
 
 use Gears\Asset\Compilers\Base;
 
+/**
+ * Class: Js
+ * =============================================================================
+ * At this stage we need not do anything further to javascript files apart from
+ * what is done by the Base compiler. Maybe one day further actions may be
+ * put in here, who knows...
+ * 
+ * > NOTE: That this class is still most certianly required!!!
+ * > Despite the above notion.
+ */
 class Js extends Base
 {
 	

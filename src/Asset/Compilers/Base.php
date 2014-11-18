@@ -100,7 +100,7 @@ class Base implements Compiler
 	{
 		if ($this->doWeNeedToMinify($this->file))
 		{
-			return $this->getMinifier($this->source)->minify();
+			return $this->getMinifier($this->file, $this->source)->minify();
 		}
 
 		return $this->source."\n\n";
@@ -119,7 +119,7 @@ class Base implements Compiler
 	 * -------------------------------------------------------------------------
 	 * An instance of a ```Gears\Asset\Minifiers```
 	 */
-	protected function getMinifier($source)
+	protected function getMinifier($file, $source)
 	{
 		$minifier = '\Gears\Asset\Minifiers\\';
 		$minifier .= ucfirst($this->destination->getExtension());
@@ -133,7 +133,7 @@ class Base implements Compiler
 			);
 		}
 
-		return new $minifier($this->file, $source);
+		return new $minifier($file, $source);
 	}
 
 	/**

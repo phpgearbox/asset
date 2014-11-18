@@ -11,7 +11,6 @@
 	"require":
 	{
 		"codegyre/robo": "*",
-		"fxp/composer-asset-plugin": "v1.0.0-beta4",
 		"tedivm/jshrink": "*",
 		"natxet/CssMin": "*",
 		"oyejorge/less.php": "*",
@@ -22,6 +21,14 @@
 	"require-dev":
 	{
 		"phpunit/phpunit": "4.*",
-		"bower-asset/bootstrap": "3.*"
+		"bower-asset/jquery": "2.1.1",
+		"bower-asset/bootstrap": "3.3.1",
+		"bower-asset/bootstrap-sass": "3.0.2",
+		"bower-asset/pure": "0.5.0"
+	},
+	"scripts":
+	{
+		"pre-install-cmd": "Gears\\Asset\\Composer::installFxpPlugin",
+		"pre-update-cmd": "Gears\\Asset\\Composer::updateFxpPlugin"
 	}
 }

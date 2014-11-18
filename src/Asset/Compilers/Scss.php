@@ -14,6 +14,14 @@
 use Gears\Asset\Compilers\Css;
 use Leafo\ScssPhp\Compiler as Scss_Parser;
 
+/**
+ * Class: Scss
+ * =============================================================================
+ * Compilies Sass or Sccs source into css before returning
+ * control to the parent Css Compiler.
+ * 
+ * > NOTE: This only caters for ```scss``` files not ```sass``` files.
+ */
 class Scss extends Css
 {
 	public function compile()

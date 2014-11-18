@@ -206,6 +206,9 @@ class BuildAssetTask implements TaskInterface
 		// Loop through the source files
 		foreach ($this->source as $file)
 		{
+			// Tell the world what we are doing
+			$this->printTaskInfo('Compiling - <info>'.$file.'</info>');
+
 			// Run the compiler for each file
 			$asset_contents .= $this->getCompiler($file)->compile();
 		}
@@ -322,10 +325,13 @@ class BuildAssetTask implements TaskInterface
 	 */
 	private function updateTemplateFile()
 	{
+		// Tell the world what we are doing
+		$this->printTaskInfo('Updating template file - <info>'.$this->template.'</info>');
+
 		// Get some details about the asset
-		$asset_name = $this->destination->getFilename();
-		$asset_name_quoted = preg_quote($asset_name, '/');
 		$asset_ext = $this->destination->getExtension();
+		$asset_name = $this->destination->getBasename('.'.$asset_ext);
+		$asset_name_quoted = preg_quote($asset_name, '/');
 
 		// Create our regular expression
 		$search_for =
@@ -354,6 +360,7 @@ class BuildAssetTask implements TaskInterface
 		// Delete any old assets
 		$files_to_delete = new Finder();
 		$files_to_delete->files();
+		$files_to_delete->name($asset_name.'.'.$asset_ext);
 		$files_to_delete->name($asset_name.'.*.'.$asset_ext);
 		$files_to_delete->name($asset_name.'.*.'.$asset_ext.'.gz');
 		$files_to_delete->in($asset_base_dir);
@@ -384,6 +391,9 @@ class BuildAssetTask implements TaskInterface
 	 */
 	private function writeAsset($asset_contents)
 	{
+		// Tell the world what we are doing
+		$this->printTaskInfo('Writing to final asset - <info>'.$this->destination->getPathname().'</info>');
+
 		// Write the normal asset
 		if (file_put_contents($this->destination->getPathname(), $asset_contents) === false)
 		{
@@ -399,6 +409,9 @@ class BuildAssetTask implements TaskInterface
 			$gz_file_name = $this->destination->getPathname().'.gz';
 
 			$gz_contents = gzencode($asset_contents);
+
+			// Tell the world what we are doing
+			$this->printTaskInfo('Writing gzipped version of final asset - <info>'.$gz_file_name.'</info>');
 
 			if (file_put_contents($gz_file_name, $gz_contents) === false)
 			{

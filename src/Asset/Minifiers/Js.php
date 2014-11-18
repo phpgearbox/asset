@@ -13,69 +13,18 @@
 
 use JShrink\Minifier as JsMin;
 use Gears\Asset\Minifiers\Base;
-use Gears\Asset\Contracts\Minifier;
 
-class Js implements Minifier
+/**
+ * Class: Js
+ * =============================================================================
+ * Basically this class is just a wrapper for the js minifier.
+ * The idea being that we have one place to edit if we want to use
+ * one of the many other minifers out there.
+ */
+class Js extends Base
 {
-	use Base;
-
-	/**
-	 * Property: $source
-	 * =========================================================================
-	 * This contains the source js code to be minfied.
-	 */
-	protected $source;
-
-	/**
-	 * Property: $file
-	 * =========================================================================
-	 * 
-	 */
-	protected $file;
-
-	/**
-	 * Method: __construct
-	 * =========================================================================
-	 * Basically this class is just a wrapper for the js minifier.
-	 * The idea being that we have one place to edit if we want to use
-	 * one of the many other minifers out there.
-	 *
-	 * Parameters:
-	 * -------------------------------------------------------------------------
-	 *  - $source: The source js to be minified.
-	 *
-	 * Returns:
-	 * -------------------------------------------------------------------------
-	 * void
-	 */
-	public function __construct($file, $source)
+	protected function mini()
 	{
-		$this->file = $file;
-		$this->source = $source;
-	}
-
-	/**
-	 * Method: minify
-	 * =========================================================================
-	 * The method to call to actually do the minifying.
-	 *
-	 * Parameters:
-	 * -------------------------------------------------------------------------
-	 * n/a
-	 *
-	 * Returns:
-	 * -------------------------------------------------------------------------
-	 * string
-	 */
-	public function minify()
-	{
-		$min = $this->lookForPreMinifiedAsset();
-
-		if ($min === false)
-		{
-			return JsMin::minify($this->source);
-		}
-
-		return $min;
+		return JsMin::minify($this->source);	
 	}
 }

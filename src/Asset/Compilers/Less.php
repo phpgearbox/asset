@@ -14,6 +14,12 @@
 use Gears\Asset\Compilers\Css;
 use Less_Parser;
 
+/**
+ * Class: Less
+ * =============================================================================
+ * Compilies less source into css before returning
+ * control to the parent Css Compiler.
+ */
 class Less extends Css
 {
 	public function compile()
