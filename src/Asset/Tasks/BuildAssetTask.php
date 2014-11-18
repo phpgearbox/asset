@@ -175,8 +175,6 @@ class BuildAssetTask implements TaskInterface
 	 * =========================================================================
 	 * The main run method.
 	 * 
-	 * Usage Example:
-	 * -------------------------------------------------------------------------
 	 * ```php
 	 * $this->taskBuildAsset('/path/to/asset.js')
 	 * 		->source

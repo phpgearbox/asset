@@ -4,6 +4,10 @@ php:
   - "5.5"
   - "5.4"
 
+before_script:
+  - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+  - npm install -g bower
+
 install: "composer install"
 
 script: "./vendor/bin/robo test"
