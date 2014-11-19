@@ -100,7 +100,7 @@ class Base implements Compiler
 	{
 		if ($this->doWeNeedToMinify($this->file))
 		{
-			return $this->getMinifier($this->file, $this->source)->minify();
+			return $this->getMinifier($this->file, $this->source)->minify()."\n\n";
 		}
 
 		return $this->source."\n\n";
