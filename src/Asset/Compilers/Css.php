@@ -107,6 +107,14 @@ class Css extends Base
 			// We only want the base path, not the filename, etc...
 			$css_asset_path = pathinfo($css_asset_path, PATHINFO_DIRNAME);
 
+			// Fix for windows enviroments
+			$css_asset_path = Str::replace
+			(
+				$css_asset_path,
+				'\\',
+				'/'
+			);
+		
 			// Do some search and replacing
 			$source = Str::replace
 			(
