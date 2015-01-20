@@ -11,11 +11,11 @@
 	"require":
 	{
 		"codegyre/robo": "*",
-		"tedivm/jshrink": "*",
-		"natxet/CssMin": "*",
-		"oyejorge/less.php": "*",
+		"patchwork/jsqueeze": "2.*",
+		"natxet/CssMin": "3.*",
+		"oyejorge/less.php": "1.*",
 		"leafo/scssphp": "*",
-		"symfony/finder": "*",
+		"symfony/finder": "2.*",
 		"gears/string": "*"
 	},
 	"require-dev":

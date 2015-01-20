@@ -55,42 +55,42 @@ class RoboFile extends Robo\Tasks
 	public function testSingleJsAsset()
 	{
 		$this->taskBuildAsset('./tests/output/single.js')
-			->source('./vendor/bower-asset/jquery/dist/jquery.js')
+			->source('./vendor/bower/jquery/dist/jquery.js')
 		->run();
 	}
 
 	public function testFolderJsAsset()
 	{
 		$this->taskBuildAsset('./tests/output/folder.js')
-			->source('./vendor/bower-asset/jquery/src')
+			->source('./vendor/bower/bootstrap/js')
 		->run();
 	}
 
 	public function testSingleCssAsset()
 	{
 		$this->taskBuildAsset('./tests/output/single.css')
-			->source('./vendor/bower-asset/bootstrap/dist/css/bootstrap.css')
+			->source('./vendor/bower/bootstrap/dist/css/bootstrap.css')
 		->run();
 	}
 
 	public function testFolderCssAsset()
 	{
 		$this->taskBuildAsset('./tests/output/folder.css')
-			->source('./vendor/bower-asset/pure')
+			->source('./vendor/bower/pure')
 		->run();
 	}
 
 	public function testLessAsset()
 	{
 		$this->taskBuildAsset('./tests/output/less.css')
-			->source('./vendor/bower-asset/bootstrap/less/bootstrap.less')
+			->source('./vendor/bower/bootstrap/less/bootstrap.less')
 		->run();
 	}
 
 	public function testScssAsset()
 	{
 		$this->taskBuildAsset('./tests/output/scss.css')
-			->source('./vendor/bower-asset/bootstrap-sass/lib/bootstrap.scss')
+			->source('./vendor/bower/bootstrap-sass/assets/stylesheets/_bootstrap.scss')
 		->run();
 	}
 
@@ -99,9 +99,9 @@ class RoboFile extends Robo\Tasks
 		$this->taskBuildAsset('./tests/output/many.css')
 			->source
 			([
-				'./vendor/bower-asset/pure',
-				'./vendor/bower-asset/bootstrap/less/bootstrap.less',
-				'./vendor/bower-asset/bootstrap-sass/lib/bootstrap.scss'
+				'./vendor/bower/pure',
+				'./vendor/bower/bootstrap/less/bootstrap.less',
+				'./vendor/bower/bootstrap-sass/assets/stylesheets/_bootstrap.scss'
 			])
 		->run();
 	}
@@ -113,7 +113,7 @@ class RoboFile extends Robo\Tasks
 		->run();
 
 		$this->taskBuildAsset('./tests/output/template.js')
-			->source('./vendor/bower-asset/jquery/dist/jquery.js')
+			->source('./vendor/bower/jquery/dist/jquery.js')
 			->template('./tests/output/template.html')
 		->run();
 	}
@@ -121,7 +121,7 @@ class RoboFile extends Robo\Tasks
 	public function testGz()
 	{
 		$this->taskBuildAsset('./tests/output/gzipped.js')
-			->source('./vendor/bower-asset/jquery/dist/jquery.js')
+			->source('./vendor/bower/jquery/dist/jquery.js')
 			->gz(true)
 		->run();
 	}
@@ -129,7 +129,7 @@ class RoboFile extends Robo\Tasks
 	public function testDebug()
 	{
 		$this->taskBuildAsset('./tests/output/debug.js')
-			->source('./vendor/bower-asset/jquery/dist/jquery.js')
+			->source('./vendor/bower/jquery/dist/jquery.js')
 			->debug(true)
 		->run();
 	}

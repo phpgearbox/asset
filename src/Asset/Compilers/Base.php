@@ -100,10 +100,21 @@ class Base implements Compiler
 	{
 		if ($this->doWeNeedToMinify($this->file))
 		{
-			return $this->getMinifier($this->file, $this->source)->minify()."\n\n";
+			$src = $this->getMinifier($this->file, $this->source)->minify();
+
+			// Remove any source mappings, they cause 404 errors.
+			// One of the benefits of using this Robo Task is that it is super
+			// easy to switch between a minifed asset and a non minified asset.
+			$src = preg_replace('/^\/\/# sourceMappingURL.*$/m', '', $src);
+
+			// TODO: generate our own source maps... sounds like a challenge :)
+		}
+		else
+		{
+			$src = $this->source;
 		}
 
-		return $this->source."\n\n";
+		return $src."\n\n";
 	}
 
 	/**

@@ -11,7 +11,7 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-use JShrink\Minifier as JsMin;
+use Patchwork\JSqueeze;
 use Gears\Asset\Minifiers\Base;
 
 /**
@@ -25,6 +25,7 @@ class Js extends Base
 {
 	protected function mini()
 	{
-		return JsMin::minify($this->source);	
+		$jz = new JSqueeze();
+		return $jz->squeeze($this->source);
 	}
 }
