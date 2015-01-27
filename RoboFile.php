@@ -11,12 +11,6 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-/*
- * Include our local composer autoloader just in case
- * we are called with a globally installed version of robo.
- */
-require_once(__DIR__.'/vendor/autoload.php');
-
 class RoboFile extends Robo\Tasks
 {
 	use Gears\Asset;
@@ -43,7 +37,7 @@ class RoboFile extends Robo\Tasks
 	{
 		$this->taskCleanDir('./tests/output')->run();
 
-		$this->taskPHPUnit()->arg('./tests')->run();
+		exit($this->taskPHPUnit()->arg('./tests')->run()->getExitCode());
 	}
 
 	/*
