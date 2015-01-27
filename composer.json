@@ -10,7 +10,7 @@
 	},
 	"require":
 	{
-		"codegyre/robo": "*",
+		"codegyre/robo": "0.5.*",
 		"patchwork/jsqueeze": "2.*",
 		"natxet/CssMin": "3.*",
 		"oyejorge/less.php": "1.*",

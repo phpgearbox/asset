@@ -13,19 +13,14 @@
 
 use SplFileInfo;
 use RuntimeException;
-use Robo\Result;
-use Robo\Output;
-use Robo\Task\FileSystem;
-use Robo\Task\Shared\DynamicConfig;
-use Robo\Task\Shared\TaskInterface;
 use Symfony\Component\Finder\Finder;
 
-class BuildAssetTask implements TaskInterface
+class BuildAssetTask extends \Robo\Task\BaseTask
 {
 	// Import some additional traits
-	use Output;
-	use FileSystem;
-	use DynamicConfig;
+	use \Robo\Task\File\loadTasks;
+	use \Robo\Task\FileSystem\loadTasks;
+	use \Robo\Common\DynamicParams;
 
 	/**
 	 * Property: destination
@@ -221,7 +216,7 @@ class BuildAssetTask implements TaskInterface
 		$this->writeAsset($asset_contents);
 
 		// If we get to here assume everything worked
-		return Result::success($this);
+		return \Robo\Result::success($this);
 	}
 
 	/**
