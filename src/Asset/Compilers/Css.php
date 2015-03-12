@@ -11,6 +11,7 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
+use Autoprefixer;
 use Gears\String as Str;
 use Gears\Asset\Compilers\Base;
 use Symfony\Component\Filesystem\Filesystem;
@@ -126,6 +127,19 @@ class Css extends Base
 
 			// Add the replaced path to our list
 			$replaced_paths[] = $fileinfo['dirname'];
+		}
+
+		// Next run autoprefixer over the css
+		if ($this->autoprefix !== false)
+		{
+			$prefixer = new Autoprefixer();
+
+			if (is_string($this->autoprefix) || is_array($this->autoprefix))
+			{
+				$prefixer->setBrowsers($this->autoprefix);
+			}
+
+			$source = $prefixer->compile($source);
 		}
 
 		// Return the css source with correct paths.

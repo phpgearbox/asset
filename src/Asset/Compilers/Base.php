@@ -1,13 +1,13 @@
 <?php namespace Gears\Asset\Compilers;
 ////////////////////////////////////////////////////////////////////////////////
-// __________ __             ________                   __________              
+// __________ __             ________                   __________
 // \______   \  |__ ______  /  _____/  ____ _____ ______\______   \ _______  ___
 //  |     ___/  |  \\____ \/   \  ____/ __ \\__  \\_  __ \    |  _//  _ \  \/  /
-//  |    |   |   Y  \  |_> >    \_\  \  ___/ / __ \|  | \/    |   (  <_> >    < 
+//  |    |   |   Y  \  |_> >    \_\  \  ___/ / __ \|  | \/    |   (  <_> >    <
 //  |____|   |___|  /   __/ \______  /\___  >____  /__|  |______  /\____/__/\_ \
 //                \/|__|           \/     \/     \/             \/            \/
 // -----------------------------------------------------------------------------
-//          Designed and Developed by Brad Jones <brad @="bjc.id.au" />         
+//          Designed and Developed by Brad Jones <brad @="bjc.id.au" />
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -50,6 +50,14 @@ class Base implements Compiler
 	protected $debug;
 
 	/**
+	 * Property: $autoprefix
+	 * =========================================================================
+	 * Only applies when building css assets.
+	 * Used in conjuction with: ```vladkens/autoprefixer-php```.
+	 */
+	protected $autoprefix;
+
+	/**
 	 * Method: __construct
 	 * =========================================================================
 	 * We inject some intial data and thats about it.
@@ -59,12 +67,13 @@ class Base implements Compiler
 	 *  - $file: The path to the source file we need to compile.
 	 *  - $destination: The final destination ```SplFileInfo``` object.
 	 *  - $debug: A simple true or false
+	 *  - $autoprefix: Applies only to css assets.
 	 *
 	 * Returns:
 	 * -------------------------------------------------------------------------
 	 * void
 	 */
-	public function __construct($file, $destination, $debug)
+	public function __construct($file, $destination, $debug, $autoprefix)
 	{
 		$this->file = new SplFileInfo($file);
 
@@ -76,6 +85,8 @@ class Base implements Compiler
 		$this->destination = $destination;
 
 		$this->debug = $debug;
+
+		$this->autoprefix = $autoprefix;
 	}
 
 	/**
@@ -84,7 +95,7 @@ class Base implements Compiler
 	 * This implementation caters for both standard native Css and Js files
 	 * that don't need any compiling as such. The less and sass compilers
 	 * extend the css compiler.
-	 * 
+	 *
 	 * > NOTE: Down the track coffee script / dart / other such
 	 * > languages could be added for javascript in a similar manner.
 	 *

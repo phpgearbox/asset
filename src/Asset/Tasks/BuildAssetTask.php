@@ -1,13 +1,13 @@
 <?php namespace Gears\Asset\Tasks;
 ////////////////////////////////////////////////////////////////////////////////
-// __________ __             ________                   __________              
+// __________ __             ________                   __________
 // \______   \  |__ ______  /  _____/  ____ _____ ______\______   \ _______  ___
 //  |     ___/  |  \\____ \/   \  ____/ __ \\__  \\_  __ \    |  _//  _ \  \/  /
-//  |    |   |   Y  \  |_> >    \_\  \  ___/ / __ \|  | \/    |   (  <_> >    < 
+//  |    |   |   Y  \  |_> >    \_\  \  ___/ / __ \|  | \/    |   (  <_> >    <
 //  |____|   |___|  /   __/ \______  /\___  >____  /__|  |______  /\____/__/\_ \
 //                \/|__|           \/     \/     \/             \/            \/
 // -----------------------------------------------------------------------------
-//          Designed and Developed by Brad Jones <brad @="bjc.id.au" />         
+//          Designed and Developed by Brad Jones <brad @="bjc.id.au" />
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -37,31 +37,31 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 	 * array of files and folders. Giving you ultimate control of the order
 	 * the source files are concatenated together, especially important for
 	 * javascript.
-	 * 
+	 *
 	 * Usage Example:
 	 * -------------------------------------------------------------------------
 	 * **Single source file**
-	 * 
+	 *
 	 * ```php
 	 * $this->taskBuildAsset('/path/to/asset.js')
 	 * 		->source('/path/to/jquery.js')
 	 * ->run();
 	 * ```
-	 * 
+	 *
 	 * **A single folder**
-	 * 
+	 *
 	 * ```php
 	 * $this->taskBuildAsset('/path/to/asset.js')
 	 * 		->source('/path/to/source/javascript')
 	 * ->run();
 	 * ```
-	 * 
+	 *
 	 * > NOTE: Files inside folders are sorted by name. So you could manipulate
 	 * > the order that files are concatenated together by prefixing a numeric
 	 * > index to each source file.
-	 * 
+	 *
 	 * **Many sources**
-	 * 
+	 *
 	 * ```php
 	 * $this->taskBuildAsset('/path/to/asset.js')
 	 * 		->source
@@ -80,7 +80,7 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 	 * =========================================================================
 	 * If this is set to true, we will not minify the asset.
 	 * Thus allowing for easier debugging during in development.
-	 * 
+	 *
 	 * **Defaults to:** ```false```
 	 */
 	private $debug = false;
@@ -91,10 +91,10 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 	 * If a valid file path is provided, we will search and replace the file
 	 * for the asset filename and update it with a filename that includes a
 	 * timestamp.
-	 * 
+	 *
 	 * We will obviously also save the asset with this time stamped filename
 	 * too. This provides us with a way to bust the client side cache.
-	 * 
+	 *
 	 * **IMPORTANT: The asset filename must be unique in the template file.**
 	 */
 	private $template = false;
@@ -105,20 +105,36 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 	 * If set to true we will also output a gzipped version of the asset so that
 	 * you can setup your webserver to serve the pre gzipped version of the
 	 * asset instead of doing it on the fly.
-	 * 
+	 *
 	 * **Defaults to:** ```false```
 	 */
 	private $gz = false;
 
 	/**
+	 * Property: autoprefix
+	 * =========================================================================
+	 * Only applies when building css assets. If set to true the default we will
+	 * automatically prefix the built css using ```vladkens/autoprefixer-php```.
+	 *
+	 * If set to false we will not do any prefixing.
+	 *
+	 * If set to a string or an array, we will perform prefixing and pass the
+	 * value through to the setBrowsers method of the Autoprefixer class,
+	 * allowing you to easily configure the prefixer.
+	 *
+	 * **Defaults to:** ```true```
+	 */
+	private $autoprefix = true;
+
+	/**
 	 * Method: __construct
 	 * =========================================================================
 	 * Simply takes in the destination option.
-	 * 
+	 *
 	 * Parameters:
 	 * -------------------------------------------------------------------------
 	 *  - $destination: The path to where we will save the built asset.
-	 * 
+	 *
 	 * Returns:
 	 * -------------------------------------------------------------------------
 	 * void
@@ -149,11 +165,11 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 	 * =========================================================================
 	 * This ensures the source value will always be an array,
 	 * even if someone is lazy and only enters a single string.
-	 * 
+	 *
 	 * Parameters:
 	 * -------------------------------------------------------------------------
 	 *  - $value: A string or array.
-	 * 
+	 *
 	 * Returns:
 	 * -------------------------------------------------------------------------
 	 * self
@@ -169,7 +185,7 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 	 * Method: run
 	 * =========================================================================
 	 * The main run method.
-	 * 
+	 *
 	 * ```php
 	 * $this->taskBuildAsset('/path/to/asset.js')
 	 * 		->source
@@ -181,11 +197,11 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 	 * 		])
 	 * ->run();
 	 * ```
-	 * 
+	 *
 	 * Parameters:
 	 * -------------------------------------------------------------------------
 	 * n/a
-	 * 
+	 *
 	 * Returns:
 	 * -------------------------------------------------------------------------
 	 * ```Robo\Result```
@@ -223,15 +239,15 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 	 * Method: getCompiler
 	 * =========================================================================
 	 * This will return a compiler object, based on the input source file.
-	 * 
+	 *
 	 * Parameters:
 	 * -------------------------------------------------------------------------
 	 *  - $file: The file/folder path of the source.
-	 * 
+	 *
 	 * Throws:
 	 * -------------------------------------------------------------------------
 	 *  - RuntimeException: In the event the compiler type doesn't exist.
-	 * 
+	 *
 	 * Returns:
 	 * -------------------------------------------------------------------------
 	 * One of the ```Gears\Asset\Compilers```, setup and ready to compile.
@@ -255,23 +271,29 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 		}
 
 		// Return the compiler
-		return new $compiler_type($file, $this->destination, $this->debug);
+		return new $compiler_type
+		(
+			$file,
+			$this->destination,
+			$this->debug,
+			$this->autoprefix
+		);
 	}
 
 	/**
 	 * Method: getSourceType
 	 * =========================================================================
 	 * As a folder does not have a file extension we need to mimic it.
-	 * 
+	 *
 	 * Parameters:
 	 * -------------------------------------------------------------------------
 	 *  - $file: The file/folder path of the source.
-	 * 
+	 *
 	 * Throws:
 	 * -------------------------------------------------------------------------
 	 *  - RuntimeException: In the event the extension is empty
 	 *    and the path does not appear to be a folder.
-	 * 
+	 *
 	 * Returns:
 	 * -------------------------------------------------------------------------
 	 *  - string: The file extension or folder if its a folder.
@@ -307,11 +329,11 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 	 * asset filename, using a timestamp. But we also need to update the
 	 * HTML that includes the asset into the web page.
 	 * This method does all that for us.
-	 * 
+	 *
 	 * Parameters:
 	 * -------------------------------------------------------------------------
 	 * n/a
-	 * 
+	 *
 	 * Returns:
 	 * -------------------------------------------------------------------------
 	 * void
@@ -368,16 +390,16 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 	 * =========================================================================
 	 * The business end, finally lets actually save the
 	 * compiled / minified asset.
-	 * 
+	 *
 	 * Parameters:
 	 * -------------------------------------------------------------------------
 	 *  - $asset_contents: The contents of the asset.
-	 * 
+	 *
 	 * Throws:
 	 * -------------------------------------------------------------------------
 	 *  - RuntimeException: If we failed to write either the standard
 	 *    or gzipped asset.
-	 * 
+	 *
 	 * Returns:
 	 * -------------------------------------------------------------------------
 	 * void

@@ -17,7 +17,8 @@
 		"leafo/scssphp": "*",
 		"symfony/finder": "2.*",
 		"symfony/filesystem": "2.*",
-		"gears/string": "*"
+		"gears/string": "*",
+		"vladkens/autoprefixer": "dev-master"
 	},
 	"require-dev":
 	{
