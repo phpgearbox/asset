@@ -16,6 +16,7 @@
 		"oyejorge/less.php": "1.*",
 		"leafo/scssphp": "*",
 		"symfony/finder": "2.*",
+		"symfony/filesystem": "2.*",
 		"gears/string": "*"
 	},
 	"require-dev":

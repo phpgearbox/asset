@@ -1,34 +1,35 @@
 <?php namespace Gears\Asset\Compilers;
 ////////////////////////////////////////////////////////////////////////////////
-// __________ __             ________                   __________              
+// __________ __             ________                   __________
 // \______   \  |__ ______  /  _____/  ____ _____ ______\______   \ _______  ___
 //  |     ___/  |  \\____ \/   \  ____/ __ \\__  \\_  __ \    |  _//  _ \  \/  /
-//  |    |   |   Y  \  |_> >    \_\  \  ___/ / __ \|  | \/    |   (  <_> >    < 
+//  |    |   |   Y  \  |_> >    \_\  \  ___/ / __ \|  | \/    |   (  <_> >    <
 //  |____|   |___|  /   __/ \______  /\___  >____  /__|  |______  /\____/__/\_ \
 //                \/|__|           \/     \/     \/             \/            \/
 // -----------------------------------------------------------------------------
-//          Designed and Developed by Brad Jones <brad @="bjc.id.au" />         
+//          Designed and Developed by Brad Jones <brad @="bjc.id.au" />
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
 use Gears\String as Str;
 use Gears\Asset\Compilers\Base;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class: Css
  * =============================================================================
  * Normally css files will reference other assets, such as images and fonts.
- * 
+ *
  * When we build a new asset from the source css and that asset is saved
  * else where in our project, the paths to these other "binary" assets
  * may no longer point to the correct place.
- * 
+ *
  * This compiler takes care of this issues for us.
- * 
+ *
  * > NOTE: We do make the assumption however that the fonts and images are
  * > indeed located in the public web accessible document root. If your assets
  * > are not it is on you to move / copy them at build time.
- * 
+ *
  * _Further to the above you might be interested in this:
  * https://github.com/francoispluchino/composer-asset-plugin/blob/master/Resources/doc/index.md#define-a-custom-directory-for-the-assets-installation_
  */
@@ -51,7 +52,7 @@ class Css extends Base
 
 		// Lets find some urls in our css
 		preg_match_all('/url\([\'"]?(.*?)[\'"]?\)/', $source, $matches);
-		
+
 		// Loop through the matches
 		foreach ($matches[1] as $key => $match)
 		{
@@ -98,10 +99,10 @@ class Css extends Base
 
 			// Now lets calulate the relative path between the destination
 			// location and the actual asset location.
-			$css_asset_path = $this->findRelativePath
+			$css_asset_path = (new Filesystem())->makePathRelative
 			(
-				$destination_root,
-				$css_asset_path
+				$css_asset_path,
+				$destination_root
 			);
 
 			// We only want the base path, not the filename, etc...
@@ -114,7 +115,7 @@ class Css extends Base
 				'\\',
 				'/'
 			);
-		
+
 			// Do some search and replacing
 			$source = Str::replace
 			(
@@ -129,57 +130,5 @@ class Css extends Base
 
 		// Return the css source with correct paths.
 		return $source;
-	}
-
-	/**
-	 * Method: findRelativePath
-	 * =========================================================================
-	 * Find the relative file system path between two file system paths.
-	 * Original credits go to: https://gist.github.com/ohaal/2936041
-	 * 
-	 * Parameters:
-	 * -------------------------------------------------------------------------
-	 *  - $frompath: Path to start from
-	 *  - $topath: Path we want to end up in
-	 * 
-	 * Returns:
-	 * -------------------------------------------------------------------------
-	 * string Path leading from $frompath to $topath
-	 */
-	private function findRelativePath($frompath, $topath)
-	{
-		// This is what we will return
-		$relpath = '';
-
-		// Explode the provided paths
-		$from = explode(DIRECTORY_SEPARATOR, $frompath);
-		$to = explode(DIRECTORY_SEPARATOR, $topath);
-
-		// Create some counters
-		$i = 0; $j = count( $from ) - 1;
-
-		// Find how far the path is the same
-		while (isset($from[$i]) && isset($to[$i]))
-		{
-			if ($from[$i] != $to[$i]) break;
-			$i++;
-		}
-
-		// Add '..' until the path is the same
-		while ($i <= $j)
-		{
-			if (!empty($from[$j])) $relpath .= '..'.DIRECTORY_SEPARATOR;
-			$j--;
-		}
-
-		// Go to folder from where it starts differing
-		while (isset($to[$i]))
-		{
-			if (!empty($to[$i])) $relpath .= $to[$i].DIRECTORY_SEPARATOR;
-			$i++;
-		}
-
-		// Strip last separator
-		return substr($relpath, 0, -1);
 	}
 }
