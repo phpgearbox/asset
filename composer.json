@@ -18,7 +18,7 @@
 		"symfony/finder": "2.*",
 		"symfony/filesystem": "2.*",
 		"gears/string": "*",
-		"vladkens/autoprefixer": "dev-master"
+		"vladkens/autoprefixer": "*"
 	},
 	"require-dev":
 	{
