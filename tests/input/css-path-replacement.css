@@ -1,0 +1,10 @@
+body
+{
+	background-image: url("html5-logo.png");
+}
+
+.foo
+{
+	background-image: url("./html5-logo.png");
+	color:red;
+}

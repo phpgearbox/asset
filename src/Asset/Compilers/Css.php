@@ -43,42 +43,39 @@ class Css extends Base
 		// then the minfier might find a pre-minified asset and simply use that.
 		$source = parent::compile();
 
-		// A list of paths that we have replaced,
-		// no point doing more work than need be.
-		$replaced_paths = [];
-
 		// Grab the real paths to both the source file and the destination asset
 		$css_asset_root = realpath($this->file->getPath());
 		$destination_root = realpath($this->destination->getPath());
 
 		// Lets find some urls in our css
-		preg_match_all('/url\([\'"]?(.*?)[\'"]?\)/', $source, $matches);
+		preg_match_all('/url\(([\'"]?.*?[\'"]?)\)/', $source, $matches);
 
 		// Loop through the matches
 		foreach ($matches[1] as $key => $match)
 		{
 			// Split the match into an array of file path parts
-			$fileinfo = pathinfo($match);
-
-			// Skip this if it has the same base path as a previous asset
-			if (in_array($fileinfo['dirname'], $replaced_paths))
-			{
-				continue;
-			}
-
+			$fileinfo = pathinfo(Str::replace($match, ["'", '"'], ''));
+			
+			// This is here really just to catter for font faces.
+			$after_file_name = '';
+			
 			// Fonts in css sometimes contain some funny charcters that are not
 			// part of the file name but are just there to deal with, yep you
 			// guessed it... IE :(
 			if (Str::contains($fileinfo['extension'], '?#'))
 			{
-				continue;
+				$ext = '<START>'.$fileinfo['extension'].'<END>';
+				$fileinfo['extension'] = Str::between($ext, '<START>', '?');
+				$after_file_name = '?'.Str::between($ext, '?', '<END>');
 			}
 
 			// SVG fonts can have some sort of ID, I am no expert on this but
 			// for our purposes we can safely ignore the id..
 			if (Str::contains($fileinfo['extension'], 'svg#'))
 			{
+				$ext = '<START>'.$fileinfo['extension'].'<END>';
 				$fileinfo['extension'] = 'svg';
+				$after_file_name = '#'.Str::between($ext, '#', '<END>');
 			}
 
 			// Create the real path to the actual asset
@@ -105,9 +102,13 @@ class Css extends Base
 				$css_asset_path,
 				$destination_root
 			);
-
-			// We only want the base path, not the filename, etc...
-			$css_asset_path = pathinfo($css_asset_path, PATHINFO_DIRNAME);
+			
+			// Remove the last slash that is added
+			// by the above relative path calulation
+			if (Str::endsWith($css_asset_path, '/'))
+			{
+				$css_asset_path = substr($css_asset_path, 0, -1);
+			}
 
 			// Fix for windows enviroments
 			$css_asset_path = Str::replace
@@ -116,17 +117,14 @@ class Css extends Base
 				'\\',
 				'/'
 			);
-
+			
 			// Do some search and replacing
 			$source = Str::replace
 			(
 				$source,
-				$fileinfo['dirname'],
-				$css_asset_path
+				'url('.$match.')',
+				'url('.$css_asset_path.$after_file_name.')'
 			);
-
-			// Add the replaced path to our list
-			$replaced_paths[] = $fileinfo['dirname'];
 		}
 
 		// Next run autoprefixer over the css

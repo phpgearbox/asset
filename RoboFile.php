@@ -127,4 +127,12 @@ class RoboFile extends Robo\Tasks
 			->debug(true)
 		->run();
 	}
+	
+	public function testCssPathReplacement()
+	{
+		$this->taskBuildAsset('./tests/output/css-path-replacement.css')
+			->source('./tests/input/css-path-replacement.css')
+			->debug(true)
+		->run();
+	}
 }

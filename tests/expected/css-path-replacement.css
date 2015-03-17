@@ -1,0 +1,11 @@
+body
+{
+	background-image: url(../input/html5-logo.png);
+}
+
+.foo
+{
+	background-image: url(../input/html5-logo.png);
+	color:red;
+}
+

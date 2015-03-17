@@ -165,6 +165,21 @@ class AssetTest extends PHPUnit_Framework_TestCase
 			'./tests/output/debug.js'
 		);
 	}
+	
+	public function testCssPathReplacement()
+	{
+		$results = $this->callRoboTask('test:css-path-replacement');
+
+		$this->assertEmpty($results['stderr']);
+
+		$this->assertFileExists('./tests/output/css-path-replacement.css');
+
+		$this->assertFileEquals
+		(
+			'./tests/expected/css-path-replacement.css',
+			'./tests/output/css-path-replacement.css'
+		);
+	}
 
 	private function callRoboTask($task)
 	{
