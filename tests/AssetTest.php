@@ -36,7 +36,7 @@ class AssetTest extends PHPUnit_Framework_TestCase
 
 		$this->assertFileExists('./tests/output/folder.js');
 
-		if (PHP_MAJOR_VERSION > 5)
+		if (PHP_MAJOR_VERSION > 5 || defined('HHVM_VERSION'))
 		{
 			$this->assertFileEquals
 			(
