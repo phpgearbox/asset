@@ -97,7 +97,7 @@ class RoboFile extends Robo\Tasks
 	public function testFinderAsset()
 	{
 		$finder = new Symfony\Component\Finder\Finder();
-		$finder->files()->in('./vendor/bower/pure')->name('*.css');
+		$finder->files()->in('./vendor/bower/pure')->name('*.css')->sortByName();
 		$this->taskBuildAsset('./tests/output/finder.css')->source($finder)->run();
 	}
 
