@@ -74,10 +74,10 @@ $this->taskBuildAsset('script.js')->source('styles.css')->run();
 ```
 
 ### Asset Source
-The task needs to know what source files will be used to build the final asset.
+The task needs to know what source files will be used to build the final asset.  
 You can supply the source files in a number of ways.
 
-* __Single Source File:__
+* __Single Source File:__  
   The simplest asset is one which has only one source file.
   All this would do is run ```unbuilt.js``` through the configured Js Minifier.
 
@@ -85,7 +85,7 @@ You can supply the source files in a number of ways.
   $this->taskBuildAsset('built.js')->source('unbuilt.js')->run();
   ```
 
-* __Single Source Folder:__
+* __Single Source Folder:__  
   Instead of a source file you can define a folder.
   The task will search for files in the folder that have the same extension as
   the destination file.
@@ -98,7 +98,7 @@ You can supply the source files in a number of ways.
   > order that files are concatenated together by prefixing a numeric index to
   > each source file.
 
-* __Many Sources:__
+* __Many Sources:__  
   You can supply any array of source files and/or folders.
 
   ```php
@@ -110,7 +110,7 @@ You can supply the source files in a number of ways.
   ])->run();
   ```
 
-* __Symfony Finder:__
+* __Symfony Finder:__  
   The last option is to supply your own configured Finder instance.
 
   ```php
@@ -156,7 +156,7 @@ are you will probably already be using Gulp or Grunt.
 
 ### Options
 
-* __Debug:__
+* __Debug:__  
   By default the task will always minify your css or js asset. If you wish to
   only build the asset, which will just concatenate the source files. You can
   set debug to true like this:
@@ -165,7 +165,7 @@ are you will probably already be using Gulp or Grunt.
   $this->taskBuildAsset(...)->source(...)->debug(true)->run();
   ```
 
-* __Gz:__
+* __Gz:__  
   Optionally the task can create a gzipped version of the final asset. This is
   so that web servers can be configured to server the pre gzipped version of the
   file instead of gzipping the file on the fly.
@@ -174,7 +174,7 @@ are you will probably already be using Gulp or Grunt.
   $this->taskBuildAsset(...)->source(...)->gz(true)->run();
   ```
 
-* __AutoPrefix:__
+* __AutoPrefix:__  
   If building a css asset, the task will automatically run a css autoprefixer
   before outputting the file. Autoprefixing parses CSS and adds vendor prefixes
   to CSS rules using values from http://caniuse.com/
@@ -187,7 +187,7 @@ are you will probably already be using Gulp or Grunt.
   $this->taskBuildAsset(...)->source(...)->autoprefix(false)->run();
   ```
 
-* __Template:__
+* __Template:__  
   This is a cache busting feature. If you provide a valid file path to a HTML
   template. The task will then save the final asset with the current unix
   time-stamp between it's base name and it's extension.
