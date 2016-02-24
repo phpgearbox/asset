@@ -36,11 +36,22 @@ class AssetTest extends PHPUnit_Framework_TestCase
 
 		$this->assertFileExists('./tests/output/folder.js');
 
-		$this->assertFileEquals
-		(
-			'./tests/expected/folder.js',
-			'./tests/output/folder.js'
-		);
+		if (PHP_MAJOR_VERSION > 5)
+		{
+			$this->assertFileEquals
+			(
+				'./tests/expected/folder-php7.js',
+				'./tests/output/folder.js'
+			);
+		}
+		else
+		{
+			$this->assertFileEquals
+			(
+				'./tests/expected/folder.js',
+				'./tests/output/folder.js'
+			);
+		}
 	}
 
 	public function testSingleCssAsset()
