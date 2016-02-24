@@ -4,6 +4,7 @@ The Asset Gear
 [![Latest Stable Version](https://poser.pugx.org/gears/asset/v/stable.svg)](https://packagist.org/packages/gears/asset)
 [![Total Downloads](https://poser.pugx.org/gears/asset/downloads.svg)](https://packagist.org/packages/gears/asset)
 [![License](https://poser.pugx.org/gears/asset/license.svg)](https://packagist.org/packages/gears/asset)
+[![HHVM Tested](http://hhvm.h4cc.de/badge/gears/asset.svg)](http://hhvm.h4cc.de/package/gears/asset)
 
 **An Asset Minification Pipeline for the [Robo](http://robo.li/) Task Runner.**
 
