@@ -13,7 +13,7 @@
 
 use SplFileInfo;
 use RuntimeException;
-use Gears\String as Str;
+use Stringy\Stringy as s;
 use Gears\Asset\Contracts\Compiler;
 
 class Base implements Compiler
@@ -177,7 +177,7 @@ class Base implements Compiler
 		return
 		(
 			!$this->debug &&
-			!Str::contains($file->getFilename(), '.min.')
+			!s::create($file->getFilename())->contains('.min.')
 		);
 	}
 }

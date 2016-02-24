@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 use Autoprefixer;
-use Gears\String as Str;
+use Stringy\Stringy as s;
 use Gears\Asset\Compilers\Base;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -54,28 +54,28 @@ class Css extends Base
 		foreach ($matches[1] as $key => $match)
 		{
 			// Split the match into an array of file path parts
-			$fileinfo = pathinfo(Str::replace($match, ["'", '"'], ''));
-			
+			$fileinfo = pathinfo(str_replace(["'", '"'], '', $match));
+
 			// This is here really just to catter for font faces.
 			$after_file_name = '';
-			
+
 			// Fonts in css sometimes contain some funny charcters that are not
 			// part of the file name but are just there to deal with, yep you
 			// guessed it... IE :(
-			if (Str::contains($fileinfo['extension'], '?#'))
+			if (s::create($fileinfo['extension'])->contains('?#'))
 			{
 				$ext = '<START>'.$fileinfo['extension'].'<END>';
-				$fileinfo['extension'] = Str::between($ext, '<START>', '?');
-				$after_file_name = '?'.Str::between($ext, '?', '<END>');
+				$fileinfo['extension'] = s::create($ext)->between('<START>', '?');
+				$after_file_name = '?'.s::create($ext)->between('?', '<END>');
 			}
 
 			// SVG fonts can have some sort of ID, I am no expert on this but
 			// for our purposes we can safely ignore the id..
-			if (Str::contains($fileinfo['extension'], 'svg#'))
+			if (s::create($fileinfo['extension'])->contains('svg#'))
 			{
 				$ext = '<START>'.$fileinfo['extension'].'<END>';
 				$fileinfo['extension'] = 'svg';
-				$after_file_name = '#'.Str::between($ext, '#', '<END>');
+				$after_file_name = '#'.s::create($ext)->between('#', '<END>');
 			}
 
 			// Create the real path to the actual asset
@@ -102,26 +102,20 @@ class Css extends Base
 				$css_asset_path,
 				$destination_root
 			);
-			
+
 			// Remove the last slash that is added
 			// by the above relative path calulation
-			if (Str::endsWith($css_asset_path, '/'))
+			if (s::create($css_asset_path)->endsWith('/'))
 			{
 				$css_asset_path = substr($css_asset_path, 0, -1);
 			}
 
 			// Fix for windows enviroments
-			$css_asset_path = Str::replace
-			(
-				$css_asset_path,
-				'\\',
-				'/'
-			);
-			
+			$css_asset_path = s::create($css_asset_path)->replace('\\', '/');
+
 			// Do some search and replacing
-			$source = Str::replace
+			$source = (string) s::create($source)->replace
 			(
-				$source,
 				'url('.$match.')',
 				'url('.$css_asset_path.$after_file_name.')'
 			);

@@ -1,17 +1,16 @@
 <?php namespace Gears\Asset\Compilers;
 ////////////////////////////////////////////////////////////////////////////////
-// __________ __             ________                   __________              
+// __________ __             ________                   __________
 // \______   \  |__ ______  /  _____/  ____ _____ ______\______   \ _______  ___
 //  |     ___/  |  \\____ \/   \  ____/ __ \\__  \\_  __ \    |  _//  _ \  \/  /
-//  |    |   |   Y  \  |_> >    \_\  \  ___/ / __ \|  | \/    |   (  <_> >    < 
+//  |    |   |   Y  \  |_> >    \_\  \  ___/ / __ \|  | \/    |   (  <_> >    <
 //  |____|   |___|  /   __/ \______  /\___  >____  /__|  |______  /\____/__/\_ \
 //                \/|__|           \/     \/     \/             \/            \/
 // -----------------------------------------------------------------------------
-//          Designed and Developed by Brad Jones <brad @="bjc.id.au" />         
+//          Designed and Developed by Brad Jones <brad @="bjc.id.au" />
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-use Gears\String as Str;
 use Gears\Asset\Compilers\Base;
 use Symfony\Component\Finder\Finder;
 
@@ -21,12 +20,12 @@ use Symfony\Component\Finder\Finder;
  * Instead of providing individual files, one may provide a path to a folder.
  * We will then loop through each file below this folder, concatenating and
  * minifying as we go.
- * 
+ *
  * > NOTE: This only works for native css and js source files.
  * > For example you would not provide a folder to a bunch of less files.
  * > You would provide the direct path to a single less file that then imports
  * > other less files, just like bootstrap does.
- * 
+ *
  * **Order of Concatenation:** Also please pay attention to filenames of your
  * files, as this will determine the order they are concatenated together.
  */

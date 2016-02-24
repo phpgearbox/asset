@@ -34,9 +34,9 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 	 * Property: source
 	 * =========================================================================
 	 * This can either be a single source file or folder. Or you may provide an
-	 * array of files and folders. Giving you ultimate control of the order
-	 * the source files are concatenated together, especially important for
-	 * javascript.
+	 * array of files and folders. Or even a Symfony Finder instance. Giving you
+	 * ultimate control of the order the source files are concatenated together,
+	 * especially important for javascript.
 	 *
 	 * Usage Example:
 	 * -------------------------------------------------------------------------
@@ -70,6 +70,20 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 	 * 			'/path/to/jquery/plugins',
 	 * 			'/path/to/main.js'
 	 * 		])
+	 * ->run();
+	 * ```
+	 *
+	 * **A Finder Instance**
+	 *
+	 * ```php
+	 * $this->taskBuildAsset('/path/to/asset.js')
+	 * 		->source
+	 * 		(
+	 * 			(new Finder)->files()
+	 * 			->in('/path/to/assets')
+	 * 			->name('*.js')
+	 * 			->sortByName()
+	 * 		)
 	 * ->run();
 	 * ```
 	 */
@@ -168,7 +182,7 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 	 *
 	 * Parameters:
 	 * -------------------------------------------------------------------------
-	 *  - $value: A string or array.
+	 *  - $value: A string or array or a Finder instance.
 	 *
 	 * Returns:
 	 * -------------------------------------------------------------------------
@@ -176,8 +190,21 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 	 */
 	public function source($value)
 	{
-		if (!is_array($value)) $value = [$value];
-		$this->source = $value;
+		if ($value instanceof Finder)
+		{
+			$this->source = [];
+
+			foreach ($value as $fileInfo)
+			{
+				$this->source[] = $fileInfo->getRealpath();
+			}
+		}
+		else
+		{
+			if (!is_array($value)) $value = [$value];
+			$this->source = $value;
+		}
+
 		return $this;
 	}
 

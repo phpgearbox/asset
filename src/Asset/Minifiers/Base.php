@@ -1,17 +1,17 @@
 <?php namespace Gears\Asset\Minifiers;
 ////////////////////////////////////////////////////////////////////////////////
-// __________ __             ________                   __________              
+// __________ __             ________                   __________
 // \______   \  |__ ______  /  _____/  ____ _____ ______\______   \ _______  ___
 //  |     ___/  |  \\____ \/   \  ____/ __ \\__  \\_  __ \    |  _//  _ \  \/  /
-//  |    |   |   Y  \  |_> >    \_\  \  ___/ / __ \|  | \/    |   (  <_> >    < 
+//  |    |   |   Y  \  |_> >    \_\  \  ___/ / __ \|  | \/    |   (  <_> >    <
 //  |____|   |___|  /   __/ \______  /\___  >____  /__|  |______  /\____/__/\_ \
 //                \/|__|           \/     \/     \/             \/            \/
 // -----------------------------------------------------------------------------
-//          Designed and Developed by Brad Jones <brad @="bjc.id.au" />         
+//          Designed and Developed by Brad Jones <brad @="bjc.id.au" />
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-use Gears\String as Str;
+use Stringy\Stringy as s;
 use Gears\Asset\Contracts\Minifier;
 
 abstract class Base implements Minifier
@@ -98,7 +98,7 @@ abstract class Base implements Minifier
 	 * =========================================================================
 	 * If we can find a pre-minified version of the file lets use that,
 	 * no point doing more work than we have to. Plus the vendor supplied
-	 * minified versions will probably be better optimised. 
+	 * minified versions will probably be better optimised.
 	 *
 	 * Parameters:
 	 * -------------------------------------------------------------------------
@@ -110,9 +110,8 @@ abstract class Base implements Minifier
 	 */
 	private function lookForPreMinifiedAsset()
 	{
-		$min_path = Str::replace
+		$min_path = s::create($this->file->getRealPath())->replace
 		(
-			$this->file->getRealPath(),
 			'.'.$this->file->getExtension(),
 			'.min.'.$this->file->getExtension()
 		);

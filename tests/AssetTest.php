@@ -1,17 +1,15 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// __________ __             ________                   __________              
+// __________ __             ________                   __________
 // \______   \  |__ ______  /  _____/  ____ _____ ______\______   \ _______  ___
 //  |     ___/  |  \\____ \/   \  ____/ __ \\__  \\_  __ \    |  _//  _ \  \/  /
-//  |    |   |   Y  \  |_> >    \_\  \  ___/ / __ \|  | \/    |   (  <_> >    < 
+//  |    |   |   Y  \  |_> >    \_\  \  ___/ / __ \|  | \/    |   (  <_> >    <
 //  |____|   |___|  /   __/ \______  /\___  >____  /__|  |______  /\____/__/\_ \
 //                \/|__|           \/     \/     \/             \/            \/
 // -----------------------------------------------------------------------------
-//          Designed and Developed by Brad Jones <brad @="bjc.id.au" />         
+//          Designed and Developed by Brad Jones <brad @="bjc.id.au" />
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
-
-use Gears\String as Str;
 
 class AssetTest extends PHPUnit_Framework_TestCase
 {
@@ -120,6 +118,21 @@ class AssetTest extends PHPUnit_Framework_TestCase
 		);
 	}
 
+	public function testFinderAsset()
+	{
+		$results = $this->callRoboTask('test:finder-asset');
+
+		$this->assertEmpty($results['stderr']);
+
+		$this->assertFileExists('./tests/output/finder.css');
+
+		$this->assertFileEquals
+		(
+			'./tests/expected/finder.css',
+			'./tests/output/finder.css'
+		);
+	}
+
 	public function testTemplate()
 	{
 		$results = $this->callRoboTask('test:template');
@@ -129,10 +142,15 @@ class AssetTest extends PHPUnit_Framework_TestCase
 		$this->assertFileExists('./tests/output/template.html');
 
 		$contents = file_get_contents('./tests/output/template.html');
-		$results = Str::wildCardMatch($contents, '<script src="./template.*.js"></script>');
-		$time = $results[1][0];
 
-		$this->assertFileExists('./tests/output/template.'.$time.'.js');
+		if (preg_match('/<script src="\.\/template\.(.*?)\.js"><\/script>/s', $contents, $match) === 1)
+		{
+			$this->assertFileExists('./tests/output/template.'.$match[1].'.js');
+		}
+		else
+		{
+			$this->fail();
+		}
 	}
 
 	public function testGz()
@@ -165,7 +183,7 @@ class AssetTest extends PHPUnit_Framework_TestCase
 			'./tests/output/debug.js'
 		);
 	}
-	
+
 	public function testCssPathReplacement()
 	{
 		$results = $this->callRoboTask('test:css-path-replacement');
