@@ -406,6 +406,7 @@ class BuildAssetTask extends \Robo\Task\BaseTask
 		$files_to_delete->name($asset_name.'.*.'.$asset_ext);
 		$files_to_delete->name($asset_name.'.*.'.$asset_ext.'.gz');
 		$files_to_delete->in($asset_base_dir);
+		$files_to_delete->depth('== 0');
 		foreach ($files_to_delete as $file_to_delete)
 		{
 			unlink($file_to_delete->getPathname());
