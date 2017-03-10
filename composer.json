@@ -1,27 +1,41 @@
 {
-	"name": "gears/asset",
-	"description": "An Asset Minfication Pipeline for the Robo Task Runner.",
-	"homepage": "https://github.com/phpgearbox/asset",
-	"keywords": ["minification", "javascript", "stylesheets", "css", "robo"],
-	"license": "MIT",
-	"autoload":
-	{
-		"psr-4": { "Gears\\": "src" }
-	},
-	"require":
-	{
-		"codegyre/robo": "^0.5|^0.6|^0.7",
-		"patchwork/jsqueeze": "^2.0",
-		"natxet/CssMin": "^3.0",
-		"oyejorge/less.php": "^1.0",
-		"leafo/scssphp": "^0.6.0",
-		"vladkens/autoprefixer": "^0.1",
-		"danielstjules/stringy": "^2.0",
-		"symfony/finder": "^2.0|^3.0",
-		"symfony/filesystem": "^2.0|^3.0"
-	},
-	"require-dev":
-	{
-		"phpunit/phpunit": "^4.0"
-	}
+    "name": "gears/asset",
+    "type": "robo-tasks",
+    "description": "An Asset Minfication Pipeline for the Robo Task Runner.",
+    "homepage": "https://github.com/phpgearbox/asset",
+    "keywords": ["minification", "javascript", "stylesheets", "css", "robo"],
+    "license": "MIT",
+    "autoload":
+    {
+        "psr-4":
+        {
+            "Gears\\Asset\\": "src"
+        }
+    },
+    "autoload-dev":
+    {
+        "psr-4":
+        {
+            "Gears\\Tests\\": "tests"
+        }
+    },
+    "require":
+    {
+        "php": "^7.0",
+        "gears/string": "^1.1",
+        "consolidation/robo": "^1.0.0",
+        "patchwork/jsqueeze": "^2.0",
+        "natxet/CssMin": "^3.0",
+        "oyejorge/less.php": "^1.0",
+        "leafo/scssphp": "^0.6.0",
+        "vladkens/autoprefixer": "^0.1",
+        "symfony/finder": "^2.0|^3.0",
+        "symfony/filesystem": "^2.0|^3.0"
+    },
+    "require-dev":
+    {
+        "phpunit/phpunit": "^6.0",
+        "beelab/bowerphp": "^0.5.1",
+        "satooshi/php-coveralls": "^1.0"
+    }
 }

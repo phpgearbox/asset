@@ -1,17 +1,13 @@
-language: php
-
 php:
-  - "hhvm"
+  - "7.1"
   - "7.0"
-  - "5.6"
-  - "5.5"
-  - "5.4"
 
-before_script:
-  - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-  - npm install -g bower
-  - bower install -f
+install:
+    - "composer install"
 
-install: "composer install"
+script:
+    - "./vendor/bin/bowerphp install"
+    - "./robo test"
 
-script: "./vendor/bin/robo test"
+after_success:
+    - "php ./vendor/bin/coveralls -v"

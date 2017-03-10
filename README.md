@@ -4,7 +4,8 @@ The Asset Gear
 [![Latest Stable Version](https://poser.pugx.org/gears/asset/v/stable.svg)](https://packagist.org/packages/gears/asset)
 [![Total Downloads](https://poser.pugx.org/gears/asset/downloads.svg)](https://packagist.org/packages/gears/asset)
 [![License](https://poser.pugx.org/gears/asset/license.svg)](https://packagist.org/packages/gears/asset)
-[![HHVM Tested](http://hhvm.h4cc.de/badge/gears/asset.svg?style=flat)](http://hhvm.h4cc.de/package/gears/asset)
+[![Coverage Status](https://coveralls.io/repos/github/phpgearbox/asset/badge.svg?branch=master)](https://coveralls.io/github/phpgearbox/asset?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/phpgearbox/asset/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/phpgearbox/asset/?branch=master)
 
 **An Asset Minification Pipeline for the [Robo](http://robo.li/) Task Runner.**
 

@@ -1,4 +1,4 @@
-<?php namespace Gears\Asset\Compilers;
+<?php declare(strict_types=1);
 ////////////////////////////////////////////////////////////////////////////////
 // __________ __             ________                   __________
 // \______   \  |__ ______  /  _____/  ____ _____ ______\______   \ _______  ___
@@ -11,12 +11,12 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
+namespace Gears\Asset\Compilers;
+
 use Gears\Asset\Compilers\Base;
 use Symfony\Component\Finder\Finder;
 
 /**
- * Class: Folder
- * =============================================================================
  * Instead of providing individual files, one may provide a path to a folder.
  * We will then loop through each file below this folder, concatenating and
  * minifying as we go.
@@ -31,26 +31,26 @@ use Symfony\Component\Finder\Finder;
  */
 class Folder extends Base
 {
-	public function compile()
-	{
-		$files = new Finder();
-		$files->files();
-		$files->name('*.'.$this->destination->getExtension());
-		$files->in($this->file->getPathname());
-		$files->sortByName();
+    public function compile(): string
+    {
+        $files = new Finder();
+        $files->files();
+        $files->name('*.'.$this->destination->getExtension());
+        $files->in($this->file->getPathname());
+        $files->sortByName();
 
-		foreach ($files as $file)
-		{
-			if ($this->doWeNeedToMinify($file))
-			{
-				$this->source .= $this->getMinifier($file, $file->getContents())->minify();
-			}
-			else
-			{
-				$this->source .= $file->getContents()."\n\n";
-			}
-		}
+        foreach ($files as $file)
+        {
+            if ($this->doWeNeedToMinify($file))
+            {
+                $this->source .= $this->getMinifier($file, $file->getContents())->minify();
+            }
+            else
+            {
+                $this->source .= $file->getContents()."\n\n";
+            }
+        }
 
-		return $this->source;
-	}
+        return $this->source;
+    }
 }

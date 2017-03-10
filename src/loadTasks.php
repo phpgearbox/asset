@@ -1,4 +1,4 @@
-<?php namespace Gears\Asset\Contracts;
+<?php declare(strict_types=1);
 ////////////////////////////////////////////////////////////////////////////////
 // __________ __             ________                   __________
 // \______   \  |__ ______  /  _____/  ____ _____ ______\______   \ _______  ___
@@ -11,8 +11,20 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-interface Compiler
+namespace Gears\Asset;
+
+use Gears\Asset\Tasks\BuildAsset;
+
+trait loadTasks
 {
-	public function __construct($file, $destination, $debug, $autoprefix);
-	public function compile();
+    /**
+     * Gears Asset Builer Task.
+     *
+     * @param  string $asset The final destination of the asset you want build.
+     * @return BuildAsset
+     */
+    protected function taskBuildAsset(string $asset)
+    {
+        return $this->task(BuildAsset::class, $asset);
+    }
 }
