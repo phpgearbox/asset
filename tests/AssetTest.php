@@ -13,15 +13,43 @@
 
 namespace Gears\Tests;
 
+use Robo;
+use Gears\Asset;
+use League\Container;
+use Symfony\Component\Console;
 use PHPUnit\Framework\TestCase;
 
-class AssetTest extends TestCase
+class AssetTest extends TestCase implements Container\ContainerAwareInterface
 {
+    use Asset\loadTasks;
+    use Robo\TaskAccessor;
+    use Robo\Task\File\loadTasks;
+    use Container\ContainerAwareTrait;
+
+    public function setUp()
+    {
+        $this->setContainer
+        (
+            Robo\Robo::createDefaultContainer
+            (
+                null, new Console\Output\NullOutput
+            )
+        );
+    }
+
+    public function collectionBuilder()
+    {
+        $tasks = new \Robo\Tasks();
+        $builder = $this->getContainer()->get('collectionBuilder', [$tasks]);
+        $tasks->setBuilder($builder);
+        return $builder;
+    }
+
     public function testSingleJsAsset()
     {
-        $results = $this->callRoboTask('test:single-js-asset');
-
-        $this->assertEmpty($results['stderr']);
+        $this->taskBuildAsset('./tests/output/single.js')
+            ->source('./vendor/bower/jquery/dist/jquery.js')
+        ->run();
 
         $this->assertFileExists('./tests/output/single.js');
 
@@ -34,9 +62,9 @@ class AssetTest extends TestCase
 
     public function testFolderJsAsset()
     {
-        $results = $this->callRoboTask('test:folder-js-asset');
-
-        $this->assertEmpty($results['stderr']);
+        $this->taskBuildAsset('./tests/output/folder.js')
+            ->source('./vendor/bower/bootstrap/js')
+        ->run();
 
         $this->assertFileExists('./tests/output/folder.js');
 
@@ -49,9 +77,9 @@ class AssetTest extends TestCase
 
     public function testSingleCssAsset()
     {
-        $results = $this->callRoboTask('test:single-css-asset');
-
-        $this->assertEmpty($results['stderr']);
+        $this->taskBuildAsset('./tests/output/single.css')
+            ->source('./vendor/bower/bootstrap/dist/css/bootstrap.css')
+        ->run();
 
         $this->assertFileExists('./tests/output/single.css');
 
@@ -64,9 +92,9 @@ class AssetTest extends TestCase
 
     public function testFolderCssAsset()
     {
-        $results = $this->callRoboTask('test:folder-css-asset');
-
-        $this->assertEmpty($results['stderr']);
+        $this->taskBuildAsset('./tests/output/folder.css')
+            ->source('./vendor/bower/pure')
+        ->run();
 
         $this->assertFileExists('./tests/output/folder.css');
 
@@ -79,9 +107,9 @@ class AssetTest extends TestCase
 
     public function testLessAsset()
     {
-        $results = $this->callRoboTask('test:less-asset');
-
-        $this->assertEmpty($results['stderr']);
+        $this->taskBuildAsset('./tests/output/less.css')
+            ->source('./vendor/bower/bootstrap/less/bootstrap.less')
+        ->run();
 
         $this->assertFileExists('./tests/output/less.css');
 
@@ -94,9 +122,9 @@ class AssetTest extends TestCase
 
     public function testScssAsset()
     {
-        $results = $this->callRoboTask('test:scss-asset');
-
-        $this->assertEmpty($results['stderr']);
+        $this->taskBuildAsset('./tests/output/scss.css')
+            ->source('./vendor/bower/bootstrap-sass/assets/stylesheets/_bootstrap.scss')
+        ->run();
 
         $this->assertFileExists('./tests/output/scss.css');
 
@@ -109,9 +137,14 @@ class AssetTest extends TestCase
 
     public function testManyAssets()
     {
-        $results = $this->callRoboTask('test:many-assets');
-
-        $this->assertEmpty($results['stderr']);
+        $this->taskBuildAsset('./tests/output/many.css')
+            ->source
+            ([
+                './vendor/bower/pure',
+                './vendor/bower/bootstrap/less/bootstrap.less',
+                './vendor/bower/bootstrap-sass/assets/stylesheets/_bootstrap.scss'
+            ])
+        ->run();
 
         $this->assertFileExists('./tests/output/many.css');
 
@@ -124,9 +157,9 @@ class AssetTest extends TestCase
 
     public function testFinderAsset()
     {
-        $results = $this->callRoboTask('test:finder-asset');
-
-        $this->assertEmpty($results['stderr']);
+        $finder = new \Symfony\Component\Finder\Finder();
+        $finder->files()->in('./vendor/bower/pure')->name('*.css')->sortByName();
+        $this->taskBuildAsset('./tests/output/finder.css')->source($finder)->run();
 
         $this->assertFileExists('./tests/output/finder.css');
 
@@ -139,9 +172,14 @@ class AssetTest extends TestCase
 
     public function testTemplate()
     {
-        $results = $this->callRoboTask('test:template');
+        $this->taskWriteToFile('./tests/output/template.html')
+            ->line('<script src="./template.js"></script>')
+        ->run();
 
-        $this->assertEmpty($results['stderr']);
+        $this->taskBuildAsset('./tests/output/template.js')
+            ->source('./vendor/bower/jquery/dist/jquery.js')
+            ->template('./tests/output/template.html')
+        ->run();
 
         $this->assertFileExists('./tests/output/template.html');
 
@@ -159,9 +197,10 @@ class AssetTest extends TestCase
 
     public function testGz()
     {
-        $results = $this->callRoboTask('test:gz');
-
-        $this->assertEmpty($results['stderr']);
+        $this->taskBuildAsset('./tests/output/gzipped.js')
+            ->source('./vendor/bower/jquery/dist/jquery.js')
+            ->gz(true)
+        ->run();
 
         $this->assertFileExists('./tests/output/gzipped.js');
         $this->assertFileExists('./tests/output/gzipped.js.gz');
@@ -175,9 +214,10 @@ class AssetTest extends TestCase
 
     public function testDebug()
     {
-        $results = $this->callRoboTask('test:debug');
-
-        $this->assertEmpty($results['stderr']);
+        $this->taskBuildAsset('./tests/output/debug.js')
+            ->source('./vendor/bower/jquery/dist/jquery.js')
+            ->debug(true)
+        ->run();
 
         $this->assertFileExists('./tests/output/debug.js');
 
@@ -190,9 +230,10 @@ class AssetTest extends TestCase
 
     public function testCssPathReplacement()
     {
-        $results = $this->callRoboTask('test:css-path-replacement');
-
-        $this->assertEmpty($results['stderr']);
+        $this->taskBuildAsset('./tests/output/css-path-replacement.css')
+            ->source('./tests/input/css-path-replacement.css')
+            ->debug(true)
+        ->run();
 
         $this->assertFileExists('./tests/output/css-path-replacement.css');
 
@@ -201,31 +242,5 @@ class AssetTest extends TestCase
             './tests/expected/css-path-replacement.css',
             './tests/output/css-path-replacement.css'
         );
-    }
-
-    private function callRoboTask($task)
-    {
-        $cmd = './robo '.$task;
-        $descriptorspec = [1 => ["pipe", "w"], 2 => ["pipe", "w"]];
-        $process = proc_open($cmd, $descriptorspec, $pipes);
-
-        if (is_resource($process))
-        {
-            $output = [];
-
-            $output['stdout'] = stream_get_contents($pipes[2]);
-            fclose($pipes[2]);
-
-            $output['stderr'] = stream_get_contents($pipes[1]);
-            fclose($pipes[1]);
-
-            proc_close($process);
-
-            return $output;
-        }
-        else
-        {
-            throw new \Exception('Failed to start process.');
-        }
     }
 }
