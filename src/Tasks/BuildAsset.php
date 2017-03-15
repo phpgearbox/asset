@@ -109,7 +109,7 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
      *                                       file, an array of files of folders,
      *                                       or a Finder instance.
      *
-     * @return BuildAssetTask                Returns our self for method chaining.
+     * @return BuildAsset                    Returns our self for method chaining.
      */
     public function source($value): self
     {
