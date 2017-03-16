@@ -1,5 +1,4 @@
-The Asset Gear
-================================================================================
+# The Asset Gear
 [![Build Status](https://travis-ci.org/phpgearbox/asset.svg?branch=master)](https://travis-ci.org/phpgearbox/asset)
 [![Latest Stable Version](https://poser.pugx.org/gears/asset/v/stable.svg)](https://packagist.org/packages/gears/asset)
 [![Total Downloads](https://poser.pugx.org/gears/asset/downloads.svg)](https://packagist.org/packages/gears/asset)
@@ -9,50 +8,25 @@ The Asset Gear
 
 **An Asset Minification Pipeline for the [Robo](http://robo.li/) Task Runner.**
 
-This project is a complete rewrite and rethink of an older project of mine
-called [AssetMini](https://github.com/brad-jones/assetmini). With the invention
-of the modern day task runner it was about time I updated the way my assets
-were minified.
-
-The main driving force behind this rewrite was to remove the load from the
-server and give it back to the developers machine. Thus reducing the possibility
-of issues on the production server.
-
-How to Install
---------------------------------------------------------------------------------
+## How to Install
 Installation via composer is easy:
 
-	composer require gears/asset
+    composer require gears/asset
 
-How to Use
---------------------------------------------------------------------------------
+## How to Use
 The first thing is that I make an assumption you know what the
 _Robo Task Runner_ is and how the basics of it work. If this is not you,
 please head over to the robo website and familiarise yourself: http://robo.li/
 
-In your ```RoboFile.php``` you need to import the ```Gears\Asset``` trait like so:
+In your ```RoboFile.php``` you need to import the
+```Gears\Asset\loadTasks``` trait like so:
 
 ```php
 class RoboFile extends Robo\Tasks
 {
-	use Gears\Asset;
+    use Gears\Asset\loadTasks;
 }
 ```
-
-If you have robo installed globally but you have required gears/asset at the
-project level. Then when you call robo the composer autoloader for your project
-will not fire. I suggest adding the following to the top of your RoboFile.php
-
-```php
-/*
- * Include our local composer autoloader just in case
- * we are called with a globally installed version of robo.
- */
-require_once(__DIR__.'/vendor/autoload.php');
-```
-
-Currently the Gears\Asset trait only provides one new task method.
-Below are some examples of how you might use the task and it's various options.
 
 ### Asset Destination
 The very first argument you must supply is the final destination of the asset
@@ -105,9 +79,9 @@ You can supply the source files in a number of ways.
   ```php
   $this->taskBuildAsset('built.js')->source
   ([
-	  '/js/jquery.js',
-	  '/js/jquery/plugins',
-	  '/js/main.js'
+      '/js/jquery.js',
+      '/js/jquery/plugins',
+      '/js/main.js'
   ])->run();
   ```
 
@@ -118,11 +92,11 @@ You can supply the source files in a number of ways.
   $this->taskBuildAsset('built.js')
   ->source
   (
-  	(new Finder)
-		->files()
-  		->in('/path/to/assets')
-  		->name('*.js')
-  		->sortByName()
+      (new Finder)
+        ->files()
+          ->in('/path/to/assets')
+          ->name('*.js')
+          ->sortByName()
   )
   ->run();
   ```
@@ -153,7 +127,31 @@ simply because, to run both of those transpiliers you must have
 [node](https://nodejs.org) installed.
 
 And if you have node, and you are programming in TypeScript or ES6 then chances
-are you will probably already be using Gulp or Grunt.
+are you will probably already be using some sort of js bundler.
+
+__UPDATE 2017-03-16:__
+Came across an intresting project [v8js](https://github.com/phpv8/v8js).
+This could be used to run things like babel in a purely PHP environment.
+Checkout [php-babel-transpiler](https://github.com/talyssonoc/php-babel-transpiler).
+
+However due to the installation barrier of the plugin (having to dick around
+with compilations of v8, etc) it seems like it would just be easier to use
+node.js directly.
+
+Docker may provide a solution to the install problem but the projects that use
+this package (mostly wordpress sites) arn't running on docker yet and probably
+never will.
+
+As much as I would like to turn this into the ultimate asset build pipeline for
+PHP in 2017, the fact is that it just makes more sense to use the tools that are
+designed for frontend builds directly instead of trying to shoehorn them into
+the PHP ecosystem.
+
+Thus this package will remain as is and provide an older style, yet muture &
+simple asset build pipeline. If a project called for anything fancy like ES6,
+TypeScript or React then there are other tools like [Browserify](http://browserify.org/),
+[Webpack](https://webpack.js.org/) & [RollupJs](http://rollupjs.org/) that will
+do a much better job than anything built in PHP.
 
 ### Options
 
