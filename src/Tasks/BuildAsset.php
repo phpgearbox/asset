@@ -231,7 +231,7 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
         // If a template file has been set lets update it
         if ($this->template !== null && file_exists($this->template))
         {
-            $this->updateTemplateFile();
+            $this->updateTemplateFile($asset_contents);
         }
 
         // Now write the asset
@@ -296,9 +296,11 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
      * HTML that includes the asset into the web page.
      * This method does all that for us.
      *
+     * @param string $asset_contents
+     *
      * @return void
      */
-    protected function updateTemplateFile()
+    protected function updateTemplateFile(string $asset_contents)
     {
         // Tell the world what we are doing
         $this->printTaskInfo('Updating template file - <info>'.$this->template.'</info>');
@@ -318,7 +320,7 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
         '/';
 
         // This is the new asset name
-        $replace_with = $asset_name.'.'.time().'.'.$asset_ext;
+        $replace_with = $asset_name.'.'.md5($asset_contents).'.'.$asset_ext;
 
         // Run the search and replace
         $this->collectionBuilder()
