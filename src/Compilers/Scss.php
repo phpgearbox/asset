@@ -26,7 +26,7 @@ class Scss extends Css
     public function compile(): string
     {
         $parser = new Scss_Parser();
-        $parser->setImportPaths($this->file->getPath());
+        $parser->addImportPath($this->file->getPath());
         $this->source = $parser->compile($this->source);
         return parent::compile();
     }
