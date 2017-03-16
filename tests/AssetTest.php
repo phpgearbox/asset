@@ -79,6 +79,7 @@ class AssetTest extends TestCase implements Container\ContainerAwareInterface
     {
         $this->taskBuildAsset('./tests/output/single.css')
             ->source('./vendor/bower/bootstrap/dist/css/bootstrap.css')
+            ->autoprefix(true)
         ->run();
 
         $this->assertFileExists('./tests/output/single.css');
@@ -94,6 +95,7 @@ class AssetTest extends TestCase implements Container\ContainerAwareInterface
     {
         $this->taskBuildAsset('./tests/output/folder.css')
             ->source('./vendor/bower/pure')
+            ->autoprefix(true)
         ->run();
 
         $this->assertFileExists('./tests/output/folder.css');
@@ -109,6 +111,7 @@ class AssetTest extends TestCase implements Container\ContainerAwareInterface
     {
         $this->taskBuildAsset('./tests/output/less.css')
             ->source('./vendor/bower/bootstrap/less/bootstrap.less')
+            ->autoprefix(true)
         ->run();
 
         $this->assertFileExists('./tests/output/less.css');
@@ -124,6 +127,7 @@ class AssetTest extends TestCase implements Container\ContainerAwareInterface
     {
         $this->taskBuildAsset('./tests/output/scss.css')
             ->source('./vendor/bower/bootstrap-sass/assets/stylesheets/_bootstrap.scss')
+            ->autoprefix(true)
         ->run();
 
         $this->assertFileExists('./tests/output/scss.css');
@@ -144,6 +148,7 @@ class AssetTest extends TestCase implements Container\ContainerAwareInterface
                 './vendor/bower/bootstrap/less/bootstrap.less',
                 './vendor/bower/bootstrap-sass/assets/stylesheets/_bootstrap.scss'
             ])
+            ->autoprefix(true)
         ->run();
 
         $this->assertFileExists('./tests/output/many.css');
@@ -159,7 +164,7 @@ class AssetTest extends TestCase implements Container\ContainerAwareInterface
     {
         $finder = new \Symfony\Component\Finder\Finder();
         $finder->files()->in('./vendor/bower/pure')->name('*.css')->sortByName();
-        $this->taskBuildAsset('./tests/output/finder.css')->source($finder)->run();
+        $this->taskBuildAsset('./tests/output/finder.css')->source($finder)->autoprefix(true)->run();
 
         $this->assertFileExists('./tests/output/finder.css');
 

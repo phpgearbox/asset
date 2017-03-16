@@ -86,11 +86,11 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
      * value through to the setBrowsers method of the Autoprefixer class,
      * allowing you to easily configure the prefixer.
      *
-     * **Defaults to:** ```true```
+     * **Defaults to:** ```false```
      *
      * @var bool
      */
-    protected $autoprefix = true;
+    protected $autoprefix = false;
 
     /**
      * BuildAssetTask Constructor.
