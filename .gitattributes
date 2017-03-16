@@ -8,3 +8,4 @@ robo export-ignore
 bower.json export-ignore
 .bowerrc export-ignore
 .editorconfig export-ignore
+phpunit.xml export-ignore
