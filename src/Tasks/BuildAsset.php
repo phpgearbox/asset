@@ -224,8 +224,8 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
             $asset_contents .= $this->getCompiler(new SplFileInfo($file))->compile();
         }
 
-        // If a template file has been set lets update it
-        if ($this->cachebust === true)
+        // Bust some cache balls
+        if ($this->debug === false && $this->cachebust === true)
         {
             $this->bustCacheBalls($asset_contents);
         }
