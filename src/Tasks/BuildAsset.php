@@ -50,20 +50,22 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
     protected $debug = false;
 
     /**
-     * If a valid file path is provided, we will search and replace the file
-     * for the asset filename and update it with a filename that includes a
-     * timestamp.
+     * If set to true and debug is also set to false we will rename the final
+     * asset to include an md5 hash of it's contents. You may also use this in
+     * conjuction with the template option.
      *
-     * We will obviously also save the asset with this time stamped filename
-     * too. This provides us with a way to bust the client side cache.
-     *
-     * **IMPORTANT: The asset filename must be unique in the template file.**
-     *
-     * **Defaults to:** ```null```
-     *
-     * @var null|string
+     * @var bool
      */
-    protected $template = null;
+    protected $cachebust = false;
+
+    /**
+     * If cachebust is set to true, the assets will be renamed.
+     * Files in this array will be opened and searched for the old filenames,
+     * replacing with the new cache busted filenames.
+     *
+     * @var string[]
+     */
+    protected $template = [];
 
     /**
      * If set to true we will also output a gzipped version of the asset so that
@@ -113,27 +115,7 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
      */
     public function source($value): self
     {
-        if ($value instanceof Finder)
-        {
-            $this->source = [];
-
-            foreach ($value as $fileInfo)
-            {
-                $this->source[] = $fileInfo->getRealpath();
-            }
-        }
-        else
-        {
-            if (!is_array($value)) $value = [$value];
-
-            if (count($value) === 0) throw new \UnexpectedValueException;
-
-            if (!is_string($value[0])) throw new \UnexpectedValueException;
-
-            $this->source = $value;
-        }
-
-        return $this;
+        $this->source = $this->normaliseSrcInput($value); return $this;
     }
 
     /**
@@ -150,12 +132,15 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
     /**
      * Template setter.
      *
-     * @param  string $value
+     * @param  string|string[]|Finder $value Can be a single path to a folder or
+     *                                       file, an array of files of folders,
+     *                                       or a Finder instance.
+     *
      * @return self
      */
-    public function template(string $value): self
+    public function template($value): self
     {
-        $this->template = $value; return $this;
+        $this->template = $this->normaliseSrcInput($value); return $this;
     }
 
     /**
@@ -178,6 +163,17 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
     public function autoprefix(bool $value): self
     {
         $this->autoprefix = $value; return $this;
+    }
+
+    /**
+     * Cachebust Setter.
+     *
+     * @param  bool $value
+     * @return self
+     */
+    public function cachebust(bool $value): self
+    {
+        $this->cachebust = $value; return $this;
     }
 
     /**
@@ -229,9 +225,9 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
         }
 
         // If a template file has been set lets update it
-        if ($this->template !== null && file_exists($this->template))
+        if ($this->cachebust === true)
         {
-            $this->updateTemplateFile($asset_contents);
+            $this->bustCacheBalls($asset_contents);
         }
 
         // Now write the asset
@@ -300,11 +296,8 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
      *
      * @return void
      */
-    protected function updateTemplateFile(string $asset_contents)
+    protected function bustCacheBalls(string $asset_contents)
     {
-        // Tell the world what we are doing
-        $this->printTaskInfo('Updating template file - <info>'.$this->template.'</info>');
-
         // Get some details about the asset
         $asset_ext = $this->destination->getExtension();
         $asset_name = $this->destination->getBasename('.'.$asset_ext);
@@ -322,12 +315,18 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
         // This is the new asset name
         $replace_with = $asset_name.'.'.md5($asset_contents).'.'.$asset_ext;
 
-        // Run the search and replace
-        $this->collectionBuilder()
-            ->taskReplaceInFile($this->template)
-            ->regex($search_for)
-            ->to($replace_with)
-        ->run();
+        foreach ($this->template as $templateFile)
+        {
+            // Tell the world what we are doing
+            $this->printTaskInfo('Updating template file - <info>'.$templateFile.'</info>');
+
+            // Run the search and replace
+            $this->collectionBuilder()
+                ->taskReplaceInFile($templateFile)
+                ->regex($search_for)
+                ->to($replace_with)
+            ->run();
+        }
 
         // Grab the asset base dir
         $asset_base_dir = $this->destination->getPath();
@@ -388,5 +387,40 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
                 );
             }
         }
+    }
+
+    /**
+     * Helper method to convert several possible inputs
+     * to a simple array of file paths.
+     *
+     * @param  string|string[]|Finder $input Can be a single path to a folder or
+     *                                       file, an array of files of folders,
+     *                                       or a Finder instance.
+     *
+     * @return string[]
+     */
+    protected function normaliseSrcInput($input): array
+    {
+        $output = [];
+
+        if ($input instanceof Finder)
+        {
+            foreach ($input as $fileInfo)
+            {
+                $output[] = $fileInfo->getRealpath();
+            }
+        }
+        else
+        {
+            if (!is_array($input)) $input = [$input];
+
+            if (count($input) === 0) throw new \UnexpectedValueException;
+
+            if (!is_string($input[0])) throw new \UnexpectedValueException;
+
+            $output = $input;
+        }
+
+        return $output;
     }
 }

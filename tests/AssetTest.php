@@ -183,6 +183,7 @@ class AssetTest extends TestCase implements Container\ContainerAwareInterface
 
         $this->taskBuildAsset('./tests/output/template.js')
             ->source('./vendor/bower/jquery/dist/jquery.js')
+            ->cachebust(true)
             ->template('./tests/output/template.html')
         ->run();
 
