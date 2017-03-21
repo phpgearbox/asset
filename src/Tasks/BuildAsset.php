@@ -225,7 +225,7 @@ class BuildAsset extends Robo\Task\BaseTask implements Robo\Contract\BuilderAwar
         }
 
         // Bust some cache balls
-        if ($this->debug === false && $this->cachebust === true)
+        if ($this->cachebust === true)
         {
             $this->bustCacheBalls($asset_contents);
         }
