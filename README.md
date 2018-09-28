@@ -1,3 +1,5 @@
+> Looking for maintainers, I no longer do much if any PHP dev, I have moved on, mostly work in dotnet core, node.js & golang these days. If anyone is keen to take over these projects, get in touch - brad@bjc.id.au
+
 # The Asset Gear
 [![Build Status](https://travis-ci.org/phpgearbox/asset.svg?branch=master)](https://travis-ci.org/phpgearbox/asset)
 [![Latest Stable Version](https://poser.pugx.org/gears/asset/v/stable.svg)](https://packagist.org/packages/gears/asset)
